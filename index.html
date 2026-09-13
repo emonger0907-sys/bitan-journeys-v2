@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitan Journeys — No te vendo el viaje, te ayudo a planearlo bien</title>
+<meta name="description" content="Diez viajes diseñados a fondo por Esteban. Gira el mundo, elige tu historia y diseñamos tu viaje juntos.">
+<meta name="theme-color" content="#050b14">
+<link rel="icon" href="assets/brand/bitan-icon.png">
+<link rel="apple-touch-icon" href="assets/brand/bitan-icon.png">
+<meta property="og:title" content="Bitan Journeys">
+<meta property="og:description" content="No te vendo el viaje. Te ayudo a planearlo bien.">
+<meta property="og:image" content="assets/brand/bitan-icon.png">
+<meta property="og:type" content="website">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<style>
+:root{--midnight:#050b14;--ivory:#f4ebd8;--sand:#d4b483;--sans:'Plus Jakarta Sans',system-ui,sans-serif;--serif:'Cormorant Garamond',Georgia,serif}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#050b14;font-family:var(--sans);font-weight:300;color:#f4ebd8;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:#d4b483;text-decoration:none}
+a:hover{color:#f4ebd8}
+input,button{font-family:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #d4b483;outline-offset:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:rgba(244,235,216,.22)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-9.5px;border-radius:50%;background:#d4b483;box-shadow:0 0 14px rgba(212,180,131,.5);cursor:pointer}
+.bj-rail::-webkit-scrollbar{width:0;height:0}
+.bj-rail{scrollbar-width:none}
+@keyframes bj-fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes bj-wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-10deg)}}
+@keyframes bj-pulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.8;transform:scale(1.25)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(90% 55% at 50% 40%,#0b1d30 0%,#050b14 72%)">
+
+  <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+  <main style="flex:1;min-height:100vh;position:relative;display:flex;flex-direction:column;overflow:hidden">
+    <span style="position:absolute;inset:0;background-image:{{ ob.bg }};background-size:cover;background-position:50% 50%;opacity:.55"></span>
+    <span style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,11,20,.55) 0%,rgba(5,11,20,.2) 32%,rgba(5,11,20,.94) 80%,#050b14 100%)"></span>
+    <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;gap:clamp(10px,2.2vh,20px);padding:40px clamp(22px,5vw,40px) clamp(28px,5vh,52px)">
+      <img src="assets/brand/bitan-icon.png" alt="" style="width:clamp(96px,16vh,150px);height:clamp(96px,16vh,150px);border-radius:26px;object-fit:contain;box-shadow:0 18px 50px -18px rgba(212,180,131,.5)">
+      <p style="margin:0;font-size:.7rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#d4b483">{{ ob.eyebrow }}</p>
+      <h1 style="margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,min(6vw,7vh),3.6rem);line-height:1.08;max-width:16ch;text-wrap:balance;text-shadow:0 0 16px rgba(212,180,131,.22)">{{ ob.title }}</h1>
+      <p style="margin:0;max-width:34ch;font-size:clamp(.92rem,2vh,1.05rem);opacity:.66;line-height:1.6;text-wrap:pretty">{{ ob.body }}</p>
+      <div style="display:flex;gap:7px;margin-top:2px">
+        <sc-for list="{{ obDots }}" as="d" hint-placeholder-count="3">
+          <span style="width:{{ d.w }};height:4px;border-radius:99px;background:{{ d.bg }};transition:all .4s ease"></span>
+        </sc-for>
+      </div>
+      <button onClick="{{ ob.next }}" style="margin-top:6px;width:100%;max-width:340px;padding:16px 0;border:1px solid rgba(212,180,131,.45);border-radius:999px;background:rgba(5,11,20,.5);color:#f4ebd8;font-size:.95rem;font-weight:500;letter-spacing:.02em;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.38)" style-hover="border-color:rgba(212,180,131,.9);box-shadow:0 10px 34px -4px rgba(212,180,131,.55)">{{ ob.cta }}</button>
+      <button onClick="{{ skipIntro }}" style="border:0;background:none;color:#f4ebd8;opacity:.42;font-size:.8rem;cursor:pointer;padding:4px" style-hover="opacity:.8">Saltar</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ notIntro }}" hint-placeholder-val="{{ false }}">
+  <header style="flex-shrink:0;position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px clamp(16px,4vw,44px)">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;cursor:pointer;color:#f4ebd8">
+      <img src="assets/brand/bitan-icon.png" alt="" style="width:46px;height:46px;border-radius:12px;object-fit:contain;flex-shrink:0">
+      <span style="display:flex;flex-direction:column;line-height:1.2;text-align:left">
+        <span style="font-family:var(--serif);font-size:1.12rem;font-weight:500;letter-spacing:.16em">BITAN</span>
+        <span style="font-size:.55rem;letter-spacing:.24em;color:#d4b483">JOURNEYS</span>
+      </span>
+    </button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <sc-if value="{{ notHome }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ goHome }}" style="padding:9px 15px;border:1px solid rgba(244,235,216,.16);border-radius:999px;background:none;color:rgba(244,235,216,.75);font-size:.74rem;letter-spacing:.03em;white-space:nowrap;cursor:pointer" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">El mundo</button>
+      </sc-if>
+      <button onClick="{{ goBrief }}" style="padding:10px 17px;border:1px solid rgba(212,180,131,.45);border-radius:999px;background:rgba(5,11,20,.5);color:#f4ebd8;font-size:.76rem;font-weight:500;letter-spacing:.02em;white-space:nowrap;cursor:pointer;box-shadow:0 6px 18px -6px rgba(212,180,131,.4)" style-hover="border-color:rgba(212,180,131,.9);box-shadow:0 8px 24px -6px rgba(212,180,131,.6)">Diseñar mi viaje →</button>
+    </div>
+  </header>
+  </sc-if>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main style="flex:1;min-height:0;display:flex;flex-direction:column">
+
+    <sc-if value="{{ mob }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+      <div style="flex-shrink:0;padding:10px 22px 0;display:flex;flex-direction:column;gap:6px;text-align:center;align-items:center">
+        <span style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,235,216,.5)">{{ v.over }}</span>
+        <h1 style="margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,9vw,2.9rem);line-height:1.05;text-shadow:0 0 18px rgba(212,180,131,.25)">{{ v.name }}</h1>
+        <p style="margin:0;font-size:.9rem;opacity:.62;max-width:30ch;line-height:1.5;text-wrap:pretty">{{ v.headline }}</p>
+      </div>
+      <div ref="{{ globeHostM }}" style="flex:1;min-height:180px;position:relative;margin:0 -12vw">
+        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
+      </div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:14px;padding:0 0 26px">
+        <div class="bj-rail" ref="{{ railM }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:6px calc(50% - 33px)">
+          <sc-for list="{{ strip }}" as="w" hint-placeholder-count="0">
+            <button onClick="{{ w.select }}" aria-label="{{ w.title }}" style="flex:none;scroll-snap-align:center;width:66px;height:66px;padding:0;border:0;background:{{ w.bg }};border-radius:50%;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 {{ w.ring }} rgba(212,180,131,{{ w.ringA }}),0 0 22px rgba(212,180,131,{{ w.glowA }});transform:scale({{ w.scale }});transition:all .35s ease">
+              <sc-if value="{{ w.isPhoto }}" hint-placeholder-val="{{ false }}">
+                <span style="width:100%;height:100%;background-image:{{ w.bgImage }};background-size:cover;background-position:{{ w.imagePosition }};opacity:{{ w.dim }};transition:opacity .35s ease"></span>
+              </sc-if>
+              <sc-if value="{{ w.isFree }}" hint-placeholder-val="{{ false }}">
+                <img src="assets/brand/bitan-icon.png" alt="" style="width:100%;height:100%;object-fit:cover;opacity:{{ w.dim }};transition:opacity .35s ease">
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+        <div style="padding:0 22px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <span style="font-size:.62rem;letter-spacing:.14em;color:#d4b483;text-align:center">{{ v.kicker }}</span>
+          <button onClick="{{ v.open }}" style="width:100%;max-width:420px;padding:16px 0;border:1px solid rgba(212,180,131,.5);border-radius:999px;background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)" style-hover="border-color:rgba(212,180,131,.9)">{{ v.cta }}</button>
+          <div style="display:flex;gap:11px;align-items:center;justify-content:center;padding:2px 4px 0">
+            <img src="assets/brand/bitan-wave.png" alt="Bitan" style="width:46px;height:46px;object-fit:contain;flex-shrink:0">
+            <span style="font-size:.76rem;opacity:.6;line-height:1.45;text-align:left;max-width:32ch">{{ bitanHint }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ desk }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;display:grid;grid-template-columns:1.2fr .8fr;grid-template-rows:minmax(0,1fr) auto;align-items:center;column-gap:clamp(20px,4vw,60px);padding:0 clamp(24px,5vw,72px)">
+      <div ref="{{ globeHostD }}" style="grid-column:1;grid-row:1;position:relative;height:100%;min-height:0;margin-left:-6vw">
+        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
+      </div>
+      <div style="grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:clamp(8px,1.6vh,16px);align-items:flex-start;max-width:460px;min-height:0;padding:12px 0">
+        <span style="font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(244,235,216,.5)">{{ v.over }}</span>
+        <h1 style="margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,min(4.4vw,7.2vh),4.2rem);line-height:1.02;text-shadow:0 0 22px rgba(212,180,131,.22)">{{ v.name }}</h1>
+        <p style="margin:0;font-size:clamp(.9rem,1.9vh,1.05rem);opacity:.66;line-height:1.55;max-width:34ch;text-wrap:pretty">{{ v.headline }}</p>
+        <sc-if value="{{ roomy }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ v.chips }}" as="c" hint-placeholder-count="4">
+            <span style="padding:6px 12px;border:1px solid rgba(212,180,131,.26);border-radius:999px;font-size:.7rem;letter-spacing:.03em;white-space:nowrap;color:rgba(244,235,216,.82)">{{ c.label }}</span>
+          </sc-for>
+        </div>
+        </sc-if>
+        <button onClick="{{ v.open }}" style="margin-top:6px;padding:15px 30px;border:1px solid rgba(212,180,131,.5);border-radius:999px;background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)" style-hover="border-color:rgba(212,180,131,.9)">{{ v.cta }}</button>
+        <sc-if value="{{ roomy }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:12px;align-items:center;padding:10px 16px 10px 10px;border-radius:20px;border:1px solid rgba(212,180,131,.18);background:linear-gradient(120deg,rgba(46,94,78,.16),rgba(14,58,95,.16))">
+          <img src="assets/brand/bitan-wave.png" alt="Bitan" style="width:60px;height:60px;object-fit:contain;flex-shrink:0">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font-size:.58rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Bitan viaja contigo</span>
+            <span style="font-size:.82rem;opacity:.78;line-height:1.45">{{ bitanHint }}</span>
+          </div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ notRoomy }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:10px;align-items:center">
+          <img src="assets/brand/bitan-wave.png" alt="Bitan" style="width:40px;height:40px;object-fit:contain;flex-shrink:0">
+          <span style="font-size:.76rem;opacity:.6;line-height:1.4;max-width:34ch">{{ bitanHint }}</span>
+        </div>
+        </sc-if>
+      </div>
+      <div style="grid-column:1 / -1;grid-row:2;display:flex;flex-direction:column;gap:6px;padding:0 0 clamp(12px,2.6vh,26px)">
+        <div class="bj-rail" ref="{{ railD }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:8px calc(50% - 33px)">
+          <sc-for list="{{ strip }}" as="w" hint-placeholder-count="0">
+            <button onClick="{{ w.select }}" aria-label="{{ w.title }}" style="flex:none;scroll-snap-align:center;width:66px;height:66px;padding:0;border:0;background:{{ w.bg }};border-radius:50%;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 {{ w.ring }} rgba(212,180,131,{{ w.ringA }}),0 0 22px rgba(212,180,131,{{ w.glowA }});transform:scale({{ w.scale }});transition:all .35s ease">
+              <sc-if value="{{ w.isPhoto }}" hint-placeholder-val="{{ false }}">
+                <span style="width:100%;height:100%;background-image:{{ w.bgImage }};background-size:cover;background-position:{{ w.imagePosition }};opacity:{{ w.dim }};transition:opacity .35s ease"></span>
+              </sc-if>
+              <sc-if value="{{ w.isFree }}" hint-placeholder-val="{{ false }}">
+                <img src="assets/brand/bitan-icon.png" alt="" style="width:100%;height:100%;object-fit:cover;opacity:{{ w.dim }};transition:opacity .35s ease">
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+        <span style="text-align:center;font-size:.62rem;letter-spacing:.14em;color:#d4b483">{{ v.kicker }}</span>
+      </div>
+    </div>
+    </sc-if>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isJourney }}" hint-placeholder-val="{{ false }}">
+  <main style="flex:1;display:flex;flex-direction:column;background:#050b14;animation:bj-fade .4s ease both">
+    <div style="position:relative;height:clamp(340px,58vh,640px);flex-shrink:0">
+      <span role="img" aria-label="{{ aj.title }}" style="position:absolute;inset:0;background-image:{{ aj.bg }};background-size:cover;background-position:{{ aj.imagePosition }}"></span>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,11,20,.5) 0%,rgba(5,11,20,.05) 28%,rgba(5,11,20,.72) 76%,#050b14 100%)"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:0 clamp(20px,5vw,60px) 30px">
+        <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">{{ aj.eyebrow }}</span>
+          <h1 style="margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.08;max-width:22ch;text-wrap:pretty">{{ aj.headline }}</h1>
+          <span style="font-size:.85rem;opacity:.7">{{ aj.meta }}</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:34px clamp(20px,5vw,60px) 90px">
+      <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:34px">
+        <p style="margin:0;font-size:clamp(1rem,1.6vw,1.15rem);line-height:1.7;opacity:.8;max-width:62ch">{{ aj.description }}</p>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <span style="font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Lo que no me saltaría</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px 34px">
+            <sc-for list="{{ ajHighlights }}" as="h" hint-placeholder-count="4">
+              <div style="display:flex;gap:16px;align-items:flex-start">
+                <span style="font-family:var(--serif);font-size:2.1rem;line-height:1;color:#d4b483;opacity:.8;min-width:38px">{{ h.n }}</span>
+                <div style="display:flex;flex-direction:column;gap:4px;padding-top:4px">
+                  <span style="font-size:1.02rem;font-weight:500">{{ h.name }}</span>
+                  <span style="font-size:.9rem;opacity:.62;line-height:1.6">{{ h.description }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:18px;padding:24px;border-radius:24px;border:1px solid rgba(212,180,131,.22);background:linear-gradient(140deg,rgba(212,180,131,.07),rgba(14,58,95,.12))">
+          <span role="img" aria-label="Bitan" style="width:62px;height:62px;border-radius:50%;background-image:{{ aj.heroBg }};background-size:cover;background-position:{{ aj.heroPosition }};flex-shrink:0;box-shadow:0 0 0 2px rgba(212,180,131,.4)"></span>
+          <p style="margin:0;flex:1;min-width:240px;font-family:var(--serif);font-style:italic;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.55;opacity:.9">{{ aj.bitanTip }}</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <button onClick="{{ startFromJourney }}" style="flex:1;min-width:260px;padding:16px 28px;border:1px solid rgba(212,180,131,.5);border-radius:999px;background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)" style-hover="border-color:rgba(212,180,131,.9)">Diseñar este viaje conmigo →</button>
+          <button onClick="{{ goHome }}" style="padding:16px 24px;border:1px solid rgba(244,235,216,.16);border-radius:999px;background:none;color:rgba(244,235,216,.7);font-size:.88rem;cursor:pointer" style-hover="border-color:rgba(212,180,131,.6);color:#f4ebd8">Volver al mundo</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isBrief }}" hint-placeholder-val="{{ false }}">
+  <main style="flex:1;display:flex;flex-direction:column;background:#050b14;padding:10px clamp(20px,5vw,60px) 40px">
+    <div style="width:100%;max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:26px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button onClick="{{ prevStep }}" style="width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1px solid rgba(244,235,216,.16);background:none;color:#f4ebd8;cursor:pointer" style-hover="border-color:rgba(212,180,131,.6)">←</button>
+        <div style="flex:1;height:2px;border-radius:2px;background:rgba(244,235,216,.12);overflow:hidden">
+          <div style="height:100%;width:{{ briefPct }};background:linear-gradient(to right,rgba(212,180,131,.5),#d4b483);transition:width .45s ease;box-shadow:0 0 12px rgba(212,180,131,.5)"></div>
+        </div>
+        <span role="img" aria-label="Bitan" style="width:38px;height:38px;border-radius:50%;background-image:{{ portraitBg }};background-size:cover;background-position:50% 35%;flex-shrink:0;box-shadow:0 0 0 1.5px rgba(212,180,131,.4)"></span>
+      </div>
+
+      <sc-if value="{{ s.destino }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Primero, lo importante</p>
+        <h2 style="margin:0;font-size:clamp(1.7rem,4vw,2.3rem);font-weight:300;max-width:18ch">¿A dónde te gustaría ir?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;line-height:1.6;max-width:34ch">Puede ser un país, una ciudad, una región… o simplemente una idea.</p>
+        <input value="{{ brief.destination }}" onChange="{{ setDestination }}" placeholder="Ej. Perú, Japón, Patagonia…" style="margin-top:8px;width:100%;min-height:3.4rem;padding:1rem 1.15rem;border-radius:20px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:1.02rem" style-focus="outline:none;border-color:rgba(212,180,131,.65);box-shadow:0 0 0 4px rgba(212,180,131,.12)">
+        <span style="font-size:.74rem;opacity:.35">o</span>
+        <button onClick="{{ toggleUnknown }}" style="padding:.8rem 1.6rem;border-radius:999px;border:1px solid {{ unknownBorder }};background:none;color:{{ unknownColor }};font-size:.88rem;white-space:nowrap;cursor:pointer">Todavía no lo sé</button>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.party }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Con quién compartes el viaje</p>
+        <h2 style="margin:0;font-size:clamp(1.7rem,4vw,2.3rem);font-weight:300">¿Con quién vas?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:34ch">Porque el mismo destino cambia mucho según con quién lo vivas.</p>
+        <div style="margin-top:8px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+          <sc-for list="{{ partyOptions }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.select }}" style="padding:22px 10px;border-radius:20px;border:1px solid {{ p.border }};background:{{ p.bg }};color:#f4ebd8;font-size:.95rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <span style="font-size:1.4rem;opacity:.85">{{ p.glyph }}</span>{{ p.label }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.dates }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Cuándo empieza la historia</p>
+        <h2 style="margin:0;font-size:clamp(1.7rem,4vw,2.3rem);font-weight:300">¿Cuándo te gustaría ir?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:34ch">Si todavía no tienes las fechas claras, no pasa nada.</p>
+        <div style="margin-top:8px;width:100%;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ dateModes }}" as="m" hint-placeholder-count="3">
+            <button onClick="{{ m.select }}" style="padding:16px 18px;border-radius:18px;border:1px solid {{ m.border }};background:{{ m.bg }};color:#f4ebd8;font-size:.95rem;cursor:pointer;text-align:left">{{ m.label }}</button>
+          </sc-for>
+          <sc-if value="{{ showExactDates }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:10px">
+              <label style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left">
+                <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Salida</span>
+                <input type="date" value="{{ brief.dates.start }}" onChange="{{ setStart }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
+              </label>
+              <label style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left">
+                <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Regreso</span>
+                <input type="date" value="{{ brief.dates.end }}" onChange="{{ setEnd }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
+              </label>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showMonth }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;flex-direction:column;gap:6px;text-align:left">
+              <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Mes aproximado</span>
+              <input type="month" value="{{ brief.dates.month }}" onChange="{{ setMonth }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
+            </label>
+          </sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.vibe }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Lo que quieres vivir</p>
+        <h2 style="margin:0;font-size:clamp(1.7rem,4vw,2.3rem);font-weight:300;max-width:20ch">¿Qué quieres sentir en este viaje?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:38ch">Elige hasta 3. No estamos escogiendo actividades todavía; estamos entendiendo qué hace que un viaje valga la pena para ti.</p>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+          <sc-for list="{{ vibeOptions }}" as="v" hint-placeholder-count="9">
+            <button onClick="{{ v.toggle }}" style="padding:12px 17px;border-radius:999px;border:1px solid {{ v.border }};background:{{ v.bg }};color:{{ v.color }};font-size:.9rem;cursor:pointer">{{ v.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.budget }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Para diseñar con los pies en la tierra</p>
+        <h2 style="margin:0;font-size:clamp(1.6rem,3.6vw,2.1rem);font-weight:300;max-width:20ch">¿Cuánto te gustaría invertir en el viaje?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:38ch">No tiene que ser exacto. Una buena referencia me ayuda a decidir dónde ahorrar y dónde vale la pena gastar.</p>
+        <div style="margin-top:6px;display:flex;padding:4px;gap:4px;border-radius:999px;border:1px solid rgba(244,235,216,.12);background:rgba(244,235,216,.03)">
+          <sc-for list="{{ basisOptions }}" as="b" hint-placeholder-count="2">
+            <button onClick="{{ b.select }}" style="padding:10px 18px;border-radius:999px;border:0;background:{{ b.bg }};color:{{ b.color }};font-size:.82rem;cursor:pointer">{{ b.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:6px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+          <sc-for list="{{ rangeOptions }}" as="r" hint-placeholder-count="6">
+            <button onClick="{{ r.select }}" style="padding:16px 8px;border-radius:16px;border:1px solid {{ r.border }};background:{{ r.bg }};color:#f4ebd8;font-size:.87rem;cursor:pointer">{{ r.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.style }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Tu forma de viajar</p>
+        <h2 style="margin:0;font-size:clamp(1.7rem,4vw,2.3rem);font-weight:300">¿Cómo te gusta viajar?</h2>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:38ch">No hay una forma correcta. Solo quiero entender qué hace que un viaje se sienta tuyo.</p>
+        <div style="margin-top:16px;width:100%;display:flex;flex-direction:column;gap:28px">
+          <sc-for list="{{ axes }}" as="a" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;gap:14px;font-size:.78rem">
+                <span style="opacity:{{ a.leftOpacity }}">{{ a.left }}</span>
+                <span style="opacity:{{ a.rightOpacity }}">{{ a.right }}</span>
+              </div>
+              <input type="range" min="0" max="100" value="{{ a.value }}" onChange="{{ a.set }}" style="width:100%;height:20px">
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ s.closing }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;animation:bj-fade .4s ease both">
+        <span role="img" aria-label="Bitan" style="width:72px;height:72px;border-radius:50%;background-image:{{ portraitBg }};background-size:cover;background-position:50% 35%;box-shadow:0 0 0 2px rgba(212,180,131,.4),0 0 22px rgba(212,180,131,.16);animation:bj-wave .5s ease .4s 3"></span>
+        <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Ya puedo imaginarlo mejor</p>
+        <p style="margin:0;font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.3">Suena a un viaje que vale la pena planear.</p>
+        <p style="margin:0;font-size:.95rem;opacity:.6;max-width:34ch">Ya tengo una buena idea de lo que estás buscando. A partir de aquí, hablamos.</p>
+        <div style="width:100%;margin-top:8px;padding:18px 20px;border-radius:20px;border:1px solid rgba(212,180,131,.2);background:rgba(212,180,131,.05);display:flex;flex-direction:column;gap:8px;text-align:left">
+          <sc-for list="{{ summaryLines }}" as="l" hint-placeholder-count="3">
+            <span style="font-size:.9rem;opacity:.8;line-height:1.55">{{ l.text }}</span>
+          </sc-for>
+        </div>
+        <div style="width:100%;display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;text-align:left">
+          <label style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Nombre</span>
+            <input value="{{ brief.contact.name }}" onChange="{{ setName }}" placeholder="¿Cómo te llamas?" style="padding:15px;border-radius:16px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.98rem">
+          </label>
+          <label style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">WhatsApp</span>
+            <input value="{{ brief.contact.whatsapp }}" onChange="{{ setPhone }}" placeholder="+52 55 1234 5678" style="padding:15px;border-radius:16px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.98rem">
+          </label>
+        </div>
+        <p style="margin:6px 0 0;font-size:.8rem;opacity:.45">No reserva nada. Solo empieza la conversación.</p>
+      </div>
+      </sc-if>
+
+      <button onClick="{{ nextStep }}" disabled="{{ stepInvalid }}" style="width:100%;padding:16px 0;border-radius:999px;border:1px solid rgba(212,180,131,.5);background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;opacity:{{ continueOpacity }};box-shadow:0 8px 26px -6px rgba(212,180,131,.42)">{{ continueLabel }}</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isHandoff }}" hint-placeholder-val="{{ false }}">
+  <main style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;padding:40px clamp(20px,5vw,60px) 60px;background:radial-gradient(70% 40% at 50% 6%,rgba(46,94,78,.22),transparent 70%),#050b14;animation:bj-fade .4s ease both">
+    <div style="width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;gap:16px">
+      <img src="assets/brand/bitan-walk.png" alt="Bitan caminando hacia el próximo viaje" style="width:140px;height:140px;object-fit:contain">
+      <p style="margin:0;font-size:.66rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">Último paso</p>
+      <h2 style="margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,4.4vw,2.8rem);line-height:1.2;max-width:18ch">Tu brief está listo para Esteban.</h2>
+      <p style="margin:0;font-size:.95rem;opacity:.6;max-width:32ch">Se abre WhatsApp con todo esto ya escrito. Solo tienes que enviarlo.</p>
+      <div style="width:100%;text-align:left;padding:20px;border-radius:20px;border:1px solid rgba(244,235,216,.12);background:rgba(244,235,216,.03);font-size:.88rem;line-height:1.75;white-space:pre-wrap;opacity:.82">{{ waMessage }}</div>
+      <a href="{{ waUrl }}" target="_blank" rel="noopener" style="width:100%;padding:16px 0;border-radius:999px;border:1px solid rgba(212,180,131,.55);background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;text-align:center;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)">Enviar por WhatsApp</a>
+      <button onClick="{{ goHomeReset }}" style="border:0;background:none;color:#f4ebd8;opacity:.45;font-size:.84rem;cursor:pointer;padding:6px" style-hover="opacity:.8">Volver a explorar</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ notHome }}" hint-placeholder-val="{{ false }}">
+  <footer style="flex-shrink:0;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center;padding:22px clamp(20px,5vw,60px);border-top:1px solid rgba(244,235,216,.08);font-size:.76rem;color:rgba(244,235,216,.45)">
+    <span>Bitan Journeys · viajes diseñados a fondo</span>
+    <a href="{{ waPlain }}" target="_blank" rel="noopener">Hablar con Esteban por WhatsApp</a>
+  </footer>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Intro&quot;,&quot;El mundo&quot;,&quot;Un viaje&quot;,&quot;Brief&quot;,&quot;WhatsApp&quot;],&quot;default&quot;:&quot;Intro&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Vista&quot;},&quot;globeZoom&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.6,&quot;max&quot;:1.2,&quot;step&quot;:0.02,&quot;default&quot;:0.82,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;El mundo&quot;},&quot;autoRotate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;El mundo&quot;}}">
+const SAND = '#d4b483';
+const WA_NUMBER = '50683785885';
+const STEP = 80;
+
+const D = [
+  { id:'01', title:'Acatenango Extremo', duration:'5 días', location:'Guatemala', image:'assets/journeys/acatenango-extremo.png', imagePosition:'50% 32%', tags:['Aventura','Volcanes','Naturaleza'], name:'Guatemala', heroImage:'assets/brand/bitan-guatemala.jpg', heroPosition:'50% 38%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Volcanes, pueblos y aventuras que se sienten enormes.', description:'Guatemala no es un destino que recomiendo por recomendar. Es uno de los viajes que más a fondo he diseñado: rutas, tiempos y logística ya pensados para que tú solo vivas la experiencia.', travelStyle:'Aventura + cultura', budgetLevel:'$ Presupuesto bajo', lat:14.6, lng:-90.5,
+    highlights:[{name:'Acatenango',description:'La caminata que te pone frente al Fuego en plena erupción.'},{name:'Antigua Guatemala',description:'Calles coloniales, volcanes de fondo y la mejor base para aclimatar.'},{name:'Lago Atitlán',description:'Pueblos mayas alrededor de un lago rodeado de volcanes.'},{name:'Volcán Pacaya',description:'Un volcán activo donde caminas sobre roca volcánica todavía caliente.'}],
+    bitanTip:'Si vas a Guatemala, no diseñaría este viaje sin dejarle una noche completa al Acatenango. Ver al Fuego despertar frente a ti cambia completamente la aventura.' },
+  { id:'02', title:'Roatán Escapadita', duration:'4 días', location:'Honduras', image:'assets/journeys/roatan-escapadita.png', imagePosition:'50% 62%', tags:['Playa','Snorkel','Relax'], name:'Roatán', heroImage:'assets/brand/bitan-roatan.jpg', heroPosition:'30% 46%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Playas, arrecifes y ese ritmo caribeño que no quieres soltar.', description:'Roatán es la escapada que diseño cuando alguien necesita desconectar de verdad: arrecife, agua turquesa y días que se sienten más largos de lo que son.', travelStyle:'Playa + snorkel', budgetLevel:'$$ Presupuesto medio-bajo', lat:16.3, lng:-86.5,
+    highlights:[{name:'West Bay',description:'La playa más fotogénica de la isla, arena blanca y agua transparente.'},{name:'Arrecife de Roatán',description:'Parte de la segunda barrera de coral más grande del mundo, ideal para snorkel.'},{name:'West End',description:'El pueblo frente al mar donde termina cada día de buceo.'},{name:'Big French Cay',description:'Un cayo casi deshabitado, perfecto para snorkel en aguas transparentes.'}],
+    bitanTip:'En Roatán no reservaría un hotel sin verificar que tenga acceso directo al arrecife — ahí está la mitad de la experiencia, no en la piscina.' },
+  { id:'03', title:'Medellín Escapadita', duration:'4 días', location:'Colombia', image:'assets/journeys/medellin-escapadita.png', imagePosition:'50% 58%', tags:['Ciudad','Cultura','Experiencias'], name:'Medellín', heroImage:'assets/brand/bitan-medellin.jpg', heroPosition:'32% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que reinventó su historia y se nota en cada barrio.', description:'Medellín no es solo una escapada de ciudad — es entender cómo un lugar puede transformarse. Diseñé este viaje para mostrar esa Medellín que sorprende a quien solo conocía su pasado.', travelStyle:'Ciudad + cultura', budgetLevel:'$ Presupuesto bajo', lat:6.2, lng:-75.6,
+    highlights:[{name:'Comuna 13',description:'Grafitis, escaleras eléctricas y una de las historias de transformación urbana más fuertes de Latinoamérica.'},{name:'El Poblado',description:'La base perfecta para moverse, comer bien y salir de noche.'},{name:'Guatapé',description:'Un día completo fuera de la ciudad, con el Peñón y su vista de 360°.'},{name:'Metrocable',description:'La forma más honesta de ver Medellín — colgado sobre la ciudad.'}],
+    bitanTip:'Si te gusta el fútbol, buscaría un partido de Nacional o Independiente Medellín. La energía de sus barras te va a dejar anonadado.' },
+  { id:'04', title:'Perú Aventura', duration:'9 días', location:'Perú', image:'assets/journeys/peru-aventura.png', imagePosition:'50% 55%', tags:['Historia','Cultura','Naturaleza'], name:'Perú', heroImage:'assets/brand/bitan-peru.jpg', heroPosition:'28% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Montañas, historia y un final que ya conoces: Machu Picchu.', description:'Perú es de los viajes que más a fondo he diseñado — porque hay demasiado en juego como para improvisar rutas, altura y tiempos.', travelStyle:'Historia + aventura', budgetLevel:'$$ Presupuesto medio', lat:-13.2, lng:-72.5,
+    highlights:[{name:'Machu Picchu',description:'La ciudadela inca que justifica por sí sola el viaje.'},{name:'Valle Sagrado',description:'Pueblos, mercados y ruinas que preparan el cuerpo y la cabeza para la altura.'},{name:'Cusco',description:'Calles coloniales construidas literalmente sobre piedra inca.'},{name:'Montaña de 7 Colores',description:'Una caminata exigente con una de las vistas más particulares de Sudamérica.'}],
+    bitanTip:'No diseñaría un viaje a Perú sin al menos dos días en Cusco antes de subir a Machu Picchu — la altura no perdona a quien llega directo.' },
+  { id:'05', title:'Argentina Sur', duration:'12 días', location:'Argentina', image:'assets/journeys/argentina-sur.png', imagePosition:'50% 48%', tags:['Glaciares','Naturaleza','Exploración'], name:'Argentina Sur', heroImage:'assets/brand/bitan-argentina-sur.jpg', heroPosition:'30% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Glaciares, montañas afiladas y una Patagonia que se siente infinita.', description:'El sur argentino es otro país dentro del mismo país. Diseñé esta ruta para quien quiere naturaleza extrema sin perder tiempo en logística mal pensada.', travelStyle:'Naturaleza + trekking', budgetLevel:'$$$ Presupuesto alto', lat:-50.5, lng:-72.5,
+    highlights:[{name:'Perito Moreno',description:'Un glaciar que sigue avanzando — y se puede escuchar romperse.'},{name:'Bariloche',description:'Lagos, chocolate y la Patagonia andina en su versión más pintoresca.'},{name:'Ushuaia',description:'El fin del mundo, literalmente, y la puerta a la Antártida.'},{name:'Buenos Aires',description:'La capital porteña, para cerrar el viaje con tango, arquitectura y vida de ciudad.'}],
+    bitanTip:'En la Patagonia no diseñaría el viaje sin días de margen — el clima manda, y las mejores vistas aparecen cuando menos las esperas.' },
+  { id:'06', title:'Argentina Norte', duration:'10 días', location:'Argentina', image:'assets/journeys/argentina-norte.png', imagePosition:'50% 45%', tags:['Paisajes','Cultura','Aventura'], name:'Argentina Norte', heroImage:'assets/brand/bitan-argentina-norte.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Desiertos de colores, vino de altura y pueblos que el tiempo dejó atrás.', description:'El norte argentino es un viaje distinto al sur — más desierto, más color, más historia. Lo diseñé como una ruta propia, no como un anexo de otro itinerario.', travelStyle:'Paisajes + cultura', budgetLevel:'$$ Presupuesto medio', lat:-23.6, lng:-65.4,
+    highlights:[{name:'Quebrada de Humahuaca',description:'Cerros de siete colores y pueblos que parecen suspendidos en el tiempo.'},{name:'Salinas Grandes',description:'Un desierto de sal blanco hasta donde alcanza la vista.'},{name:'Cafayate',description:'Vino de altura entre montañas rojas.'},{name:'Purmamarca',description:'Base perfecta para moverse por la Quebrada sin prisa.'}],
+    bitanTip:'En Purmamarca no iría solo a tomar la foto y seguir. Métete en el pueblo, conversa, camina y déjate envolver por la cultura andina. Se siente como viajar en el tiempo a un lugar donde sus raíces todavía están profundamente vivas.' },
+  { id:'07', title:'Road Trip Canadá', duration:null, location:'Vancouver → Calgary · Canadá', image:'assets/journeys/canada-road-trip.png', imagePosition:'50% 58%', tags:['Naturaleza','Montañas','Road Trip'], name:'Road Trip Canadá', heroImage:'assets/brand/bitan-canada.jpg', heroPosition:'24% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Carretera, montañas nevadas y lagos que parecen pintados.', description:'Este no es un destino, es una ruta — de Vancouver a Calgary, con paradas que hacen que el camino sea tan importante como el destino.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:51.2, lng:-115.6,
+    highlights:[{name:'Banff',description:'El parque nacional que define la imagen de las Rocosas canadienses.'},{name:'Lake Louise',description:'Un lago turquesa rodeado de glaciares que se ve mejor en persona que en fotos.'},{name:'Icefields Parkway',description:'Una de las carreteras más espectaculares del mundo, sin exagerar.'},{name:'Jasper',description:'Naturaleza salvaje y cielos oscuros al final del Icefields Parkway.'}],
+    bitanTip:'Si haces este road trip, no lo diseñaría sin tiempo extra en el Icefields Parkway — es de esos caminos donde vas a querer parar cada cinco minutos.' },
+  { id:'08', title:'Road Trip USA', duration:null, location:'Utah · Wyoming · Montana · Idaho · Washington', image:'assets/journeys/usa-road-trip.png', imagePosition:'50% 42%', tags:['Parques','Naturaleza','Road Trip'], name:'Road Trip USA', heroImage:'assets/brand/bitan-usa-roadtrip.jpg', heroPosition:'24% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Parques nacionales, carreteras eternas y paisajes que cambian cada día.', description:'Un road trip por el oeste de Estados Unidos diseñado para conectar los parques que más vale la pena ver — sin desperdiciar días manejando de más.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:44.4, lng:-110.6,
+    highlights:[{name:'Yellowstone',description:'Géiseres, vida salvaje y el parque nacional más antiguo del mundo.'},{name:'Grand Teton',description:'Montañas que parecen sacadas de una postal, a minutos de Yellowstone.'},{name:'Glacier National Park',description:'Naturaleza intacta antes de que sus glaciares desaparezcan.'},{name:'North Cascades',description:'Picos alpinos y lagos glaciares en el rincón más salvaje de Washington.'}],
+    bitanTip:'En un road trip así, no diseñaría el viaje sin bloques de manejo más cortos de lo normal — los paisajes te van a hacer parar más de lo que planeas.' },
+  { id:'09', title:'New York', duration:null, location:'EE.UU.', image:'assets/journeys/new-york.png', imagePosition:'62% 55%', tags:['Ciudad','Cultura','Gastronomía'], name:'New York', heroImage:'assets/brand/bitan-newyork.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que se explora mejor caminando, cuadra por cuadra.', description:'La ciudad que has visto en tantas películas de repente cobra vida frente a ti.', travelStyle:'Ciudad a pie', budgetLevel:'$$$ Presupuesto alto', lat:40.7, lng:-74.0,
+    highlights:[{name:'5th Avenue',description:'La avenida icónica para caminar, mirar vitrinas y sentir el pulso de la ciudad.'},{name:'Central Park',description:'El respiro verde en medio de los rascacielos.'},{name:'Hudson Yards',description:'Arquitectura moderna, tiendas y una de las zonas más nuevas de Manhattan.'},{name:'SUMMIT One Vanderbilt',description:'Un mirador inmersivo que reinventa la manera de ver Manhattan desde arriba.'}],
+    bitanTip:'En New York no diseñaría el viaje alrededor del metro — la ciudad se entiende mejor cuando caminas entre una parada y la siguiente.' },
+  { id:'10', title:'California Coast', duration:'10 días', location:'Los Ángeles → San Francisco · EE.UU.', image:'assets/journeys/california-coast.jpg', imagePosition:'40% 50%', tags:['Road trip','Ciudades','Costa','Parques nacionales'], name:'California Coast', heroImage:'assets/brand/bitan-california-coast.jpg', heroPosition:'32% 68%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Donde la carretera conecta ciudades, gigantes y Pacífico.', description:'California Coast no es solo playa — es un road trip diseñado a fondo que conecta grandes ciudades, carreteras costeras, desierto y parques nacionales con árboles gigantes.', travelStyle:'Road trip + ciudades', budgetLevel:'$$$ Presupuesto alto', lat:36.5, lng:-119.5,
+    highlights:[{name:'Los Ángeles',description:'Ciudad, costa y punto natural para comenzar la ruta.'},{name:'San Francisco',description:'Barrios, bahía y una de las ciudades más icónicas del West Coast.'},{name:'Sequoia + Kings Canyon',description:'Carreteras de montaña y algunos de los paisajes de árboles gigantes más impresionantes del viaje.'},{name:'Yosemite',description:'Formaciones de granito, cascadas y uno de los parques más icónicos de California.'}],
+    bitanTip:'En California no intentaría ganarle kilómetros al mapa. Dejaría que la costa, los parques y las ciudades cambien el ritmo del viaje. Parte de lo mejor del West Coast ocurre entre un destino y el siguiente. Si quieres cambiar el ritmo de la ruta —o volver a hacerla de una forma distinta— Las Vegas + Grand Canyon funcionan como una excelente extensión alternativa.' },
+];
+
+const FREE = { name:'Tu propio viaje', headline:'Si tu destino no está en el mundo todavía, lo diseñamos desde cero.' };
+
+const PARTY = [
+  { value:'solo', label:'Solo', glyph:'○' },
+  { value:'pareja', label:'Pareja', glyph:'◎' },
+  { value:'familia', label:'Familia', glyph:'◍' },
+  { value:'amigos', label:'Amigos', glyph:'◈' },
+];
+const PARTY_LABELS = { solo:'Solo', pareja:'Pareja', familia:'Familia', amigos:'Amigos' };
+const VIBES = [
+  ['aventura','Aventura'],['naturaleza','Naturaleza'],['comida','Comida'],['cultura','Cultura'],
+  ['ciudades','Ciudades'],['road_trip','Road trip'],['relax','Relax'],['confort','Confort'],['presupuesto','Cuidar presupuesto'],
+];
+const RANGES = [
+  ['under_1000','Menos de $1,000'],['1000_1500','$1,000 – $1,500'],['1500_2500','$1,500 – $2,500'],
+  ['2500_4000','$2,500 – $4,000'],['4000_plus','$4,000+'],['unknown','Aún no lo sé'],
+];
+const AXES = [
+  { key:'pace', left:'Ver todo', right:'Tomarlo con calma' },
+  { key:'spendingStyle', left:'Ahorrar al máximo', right:'Gastar donde vale la pena' },
+  { key:'structure', left:'Tenerlo planeado', right:'Dejar espacio a lo espontáneo' },
+];
+const STEPS = ['destino','party','dates','vibe','budget','style','closing'];
+const PINS_JSON = JSON.stringify(D.map((d, i) => ({ i, lat: d.lat, lng: d.lng, title: d.title })));
+const SCREENS = { 'Intro':'intro', 'El mundo':'home', 'Un viaje':'journey', 'Brief':'brief', 'WhatsApp':'handoff' };
+
+const ONBOARDING = [
+  { eyebrow:'El mismo planeta', title:'Historias distintas.', body:'Diez viajes que ya diseñé a fondo, abiertos para que los recorras antes de decidir.', cta:'Seguir', image:'assets/journeys/argentina-sur.png' },
+  { eyebrow:'Cómo trabajo', title:'No te vendo el viaje.', body:'Investigo, comparo y optimizo rutas, vuelos, hoteles y tiempos. Tú mantienes el control de cada reserva.', cta:'Seguir', image:'assets/journeys/peru-aventura.png' },
+  { eyebrow:'Tu compañero de ruta', title:'Bitan viaja contigo.', body:'Te acompaña mientras exploras, y cambia de destino contigo. Cuando encuentres el tuyo, hablamos por WhatsApp.', cta:'Empezar a explorar', image:'assets/journeys/canada-road-trip.png' },
+];
+
+const meta = d => (d.duration ? d.duration + ' · ' + d.location : d.location);
+const bucket = (v, lo, mid, hi) => (v < 34 ? lo : v > 66 ? hi : mid);
+
+class Component extends DCLogic {
+  state = {
+    screen: null, obStep: 0, sel: 0, active: 0, visited: [], briefStep: 0,
+    desk: typeof window !== 'undefined' && window.innerWidth >= 820,
+    tall: typeof window !== 'undefined' && window.innerHeight >= 700,
+    brief: {
+      destination: '', destinationUnknown: false, travelParty: null,
+      dates: { mode: null, start: '', end: '', month: '' },
+      vibes: [], budget: { basis: 'per_person', range: null },
+      travelStyle: { pace: 50, spendingStyle: 50, structure: 50 },
+      contact: { name: '', whatsapp: '' },
+    },
+  };
+
+  globeHostD = React.createRef();
+  globeHostM = React.createRef();
+  railD = React.createRef();
+  railM = React.createRef();
+
+  screen() { return this.state.screen || SCREENS[this.props.startScreen] || 'intro'; }
+  rail() { return (this.state.desk ? this.railD.current : this.railM.current); }
+
+  onPin = e => this.pick(e.detail.i, true);
+  onKey = e => {
+    if (this.screen() !== 'home') return;
+    if (e.key === 'ArrowRight') this.pick(Math.min(D.length, this.state.sel + 1), true);
+    if (e.key === 'ArrowLeft') this.pick(Math.max(0, this.state.sel - 1), true);
+  };
+
+  componentDidMount() {
+    this.mq = window.matchMedia('(min-width: 820px)');
+    this.mqH = window.matchMedia('(min-height: 700px)');
+    this.onMq = () => this.setState({ desk: this.mq.matches, tall: this.mqH.matches });
+    if (this.mq.addEventListener) this.mq.addEventListener('change', this.onMq);
+    if (this.mqH.addEventListener) this.mqH.addEventListener('change', this.onMq);
+    window.addEventListener('keydown', this.onKey);
+    this.setState({ desk: this.mq.matches, tall: this.mqH.matches });
+    this.bind();
+  }
+  componentDidUpdate() { this.bind(); }
+  componentWillUnmount() {
+    if (this.mq && this.mq.removeEventListener) this.mq.removeEventListener('change', this.onMq);
+    window.removeEventListener('keydown', this.onKey);
+  }
+
+  bind() {
+    const host = this.state.desk ? this.globeHostD.current : this.globeHostM.current;
+    if (host && host !== this.bound) {
+      host.addEventListener('bitan-pin', this.onPin);
+      this.bound = host;
+    }
+    const r = this.rail();
+    if (r && r !== this.boundRail) {
+      this.boundRail = r;
+      r.scrollLeft = this.state.sel * STEP;
+    }
+  }
+
+  pick(i, scroll) {
+    if (scroll) { const r = this.rail(); if (r) r.scrollTo({ left: i * STEP, behavior: 'smooth' }); }
+    if (i !== this.state.sel) this.setState({ sel: i });
+  }
+
+  patch(part) { this.setState(s => ({ brief: Object.assign({}, s.brief, part) })); }
+  go = screen => this.setState({ screen });
+
+  openJourney = i => this.setState(s => ({
+    screen: 'journey', active: i,
+    visited: s.visited.indexOf(i) < 0 ? s.visited.concat([i]) : s.visited,
+  }));
+
+  valid(key) {
+    const b = this.state.brief;
+    if (key === 'destino') return b.destinationUnknown || b.destination.trim().length > 0;
+    if (key === 'party') return Boolean(b.travelParty);
+    if (key === 'dates') {
+      const d = b.dates;
+      if (d.mode === 'exact') return Boolean(d.start && d.end);
+      if (d.mode === 'approximate') return Boolean(d.month);
+      return d.mode === 'unknown';
+    }
+    if (key === 'vibe') return b.vibes.length >= 1;
+    if (key === 'budget') return Boolean(b.budget.range);
+    if (key === 'closing') return b.contact.name.trim().length > 0 && b.contact.whatsapp.trim().length > 0;
+    return true;
+  }
+
+  describeDates() {
+    const d = this.state.brief.dates;
+    const fmt = (iso, opts) => { try { return new Date(iso + 'T00:00:00').toLocaleDateString('es', opts); } catch (e) { return iso; } };
+    if (d.mode === 'exact' && d.start && d.end) return fmt(d.start, { day:'numeric', month:'long', year:'numeric' }) + ' – ' + fmt(d.end, { day:'numeric', month:'long', year:'numeric' });
+    if (d.mode === 'approximate' && d.month) return fmt(d.month + '-01', { month:'long', year:'numeric' });
+    return 'Fechas flexibles';
+  }
+
+  describeBudget() {
+    const b = this.state.brief.budget;
+    if (!b.range) return null;
+    const label = (RANGES.find(r => r[0] === b.range) || [])[1];
+    return label + ' (' + (b.basis === 'total' ? 'presupuesto total' : 'por persona') + ')';
+  }
+
+  waMessage() {
+    const b = this.state.brief, ts = b.travelStyle;
+    const lines = ['Hola Esteban, quiero empezar a planear un viaje con Bitan.', ''];
+    lines.push('Destino: ' + (b.destinationUnknown ? 'Aún no lo sé' : b.destination));
+    if (b.travelParty) lines.push('Viaje: ' + PARTY_LABELS[b.travelParty]);
+    lines.push('Fechas: ' + this.describeDates());
+    if (b.vibes.length) lines.push('Buscamos: ' + b.vibes.map(v => (VIBES.find(x => x[0] === v) || [])[1]).join(', '));
+    const bud = this.describeBudget();
+    if (bud) lines.push('Presupuesto: ' + bud);
+    lines.push('Ritmo: ' + bucket(ts.pace, 'Ver todo lo posible', 'Ritmo equilibrado', 'Tomarlo con calma'));
+    lines.push('Gasto: ' + bucket(ts.spendingStyle, 'Ahorrar al máximo', 'Balance entre ahorrar y disfrutar', 'Gastar donde vale la pena'));
+    lines.push('Planificación: ' + bucket(ts.structure, 'Todo bien planeado', 'Con algo de estructura y espacio libre', 'Con espacio para lo espontáneo'));
+    return lines.join('\n');
+  }
+
+  renderVals() {
+    const st = this.state, b = st.brief;
+    const screen = this.screen();
+    const free = st.sel >= D.length;
+    const cur = D[Math.min(st.sel, D.length - 1)];
+    const aj = D[st.active];
+    const key = STEPS[Math.min(st.briefStep, STEPS.length - 1)];
+    const last = st.briefStep >= STEPS.length - 1;
+    const ok = this.valid(key);
+    const sel = on => (on ? 'rgba(212,180,131,.6)' : 'rgba(244,235,216,.14)');
+    const selBg = on => (on ? 'rgba(212,180,131,.12)' : 'rgba(244,235,216,.03)');
+    const spin = this.props.autoRotate === true;
+
+    const strip = D.map((d, i) => ({
+      title: d.title, image: d.image, bgImage: 'url(' + d.image + ')', imagePosition: d.imagePosition,
+      isPhoto: true, isFree: false, bg: 'none',
+      ring: i === st.sel ? '2px' : '1px',
+      ringA: i === st.sel ? '.9' : '.25',
+      glowA: i === st.sel ? '.45' : '0',
+      scale: i === st.sel ? '1.18' : '1',
+      dim: i === st.sel ? '1' : '.55',
+      select: () => this.pick(i, true),
+    })).concat([{
+      title: 'Quiero diseñar un viaje con Bitan', image: '', imagePosition: '50% 50%',
+      isPhoto: false, isFree: true, bg: 'rgba(212,180,131,.07)',
+      ring: free ? '2px' : '1px', ringA: free ? '.9' : '.3',
+      glowA: free ? '.45' : '0', scale: free ? '1.18' : '1', dim: free ? '1' : '.6',
+      select: () => this.pick(D.length, true),
+    }]);
+
+    const bitanPortrait = st.visited.length ? D[st.visited[st.visited.length - 1]].heroImage : 'assets/brand/bitan-classic.png';
+
+    return {
+      desk: st.desk, mob: !st.desk, roomy: st.tall, notRoomy: !st.tall,
+      isIntro: screen === 'intro',
+      notIntro: screen !== 'intro',
+      ob: {
+        eyebrow: ONBOARDING[st.obStep].eyebrow,
+        title: ONBOARDING[st.obStep].title,
+        body: ONBOARDING[st.obStep].body,
+        cta: ONBOARDING[st.obStep].cta,
+        bg: 'url(' + ONBOARDING[st.obStep].image + ')',
+        next: () => (st.obStep < ONBOARDING.length - 1 ? this.setState({ obStep: st.obStep + 1 }) : this.go('home')),
+      },
+      obDots: ONBOARDING.map((_, i) => ({ w: i === st.obStep ? '22px' : '4px', bg: i === st.obStep ? SAND : 'rgba(244,235,216,.25)' })),
+      skipIntro: () => this.go('home'),
+      isHome: screen === 'home',
+      isJourney: screen === 'journey',
+      isBrief: screen === 'brief',
+      isHandoff: screen === 'handoff',
+      notHome: screen !== 'home',
+      goHome: () => this.go('home'),
+      goBrief: () => this.setState({ screen: 'brief', briefStep: 0 }),
+      zoomAttr: String(this.props.globeZoom || 0.82),
+      pinsJson: PINS_JSON,
+      globeHostD: this.globeHostD,
+      globeHostM: this.globeHostM,
+      railD: this.railD,
+      railM: this.railM,
+      strip,
+
+      v: {
+        over: free ? 'Sin destino todavía' : 'Ahora sobre',
+        name: free ? FREE.name : cur.name,
+        headline: free ? FREE.headline : cur.headline,
+        attr: free ? '' : String(st.sel),
+        autorotate: free || spin ? 'true' : 'false',
+        heroImage: free ? '' : cur.heroImage,
+        heroPosition: free ? '50% 35%' : cur.heroPosition,
+        kicker: free ? 'Empieza de cero · 7 preguntas' : cur.id + ' / 10 · ' + meta(cur),
+        cta: free ? 'Quiero diseñar un viaje con Bitan →' : 'Ver destino →',
+        chips: free ? [] : [cur.duration, cur.location, cur.travelStyle, cur.budgetLevel].filter(Boolean).map(l => ({ label: l })),
+        onScroll: e => {
+          const i = Math.max(0, Math.min(D.length, Math.round(e.currentTarget.scrollLeft / STEP)));
+          if (i !== st.sel) this.setState({ sel: i });
+        },
+        open: () => {
+          if (free) { this.patch({ destination: '', destinationUnknown: false }); this.setState({ screen: 'brief', briefStep: 0 }); }
+          else this.openJourney(st.sel);
+        },
+      },
+
+      aj: Object.assign({}, aj, { meta: meta(aj), bg: 'url(' + aj.image + ')', heroBg: 'url(' + aj.heroImage + ')' }),
+      portraitBg: 'url(' + bitanPortrait + ')',
+      ajHighlights: aj.highlights.map((h, i) => Object.assign({ n: '0' + (i + 1) }, h)),
+      startFromJourney: () => {
+        this.patch({ destination: aj.name, destinationUnknown: false });
+        this.setState({ screen: 'brief', briefStep: 0 });
+      },
+
+      bitanHint: free
+        ? 'Aquí empezamos de cero: tú me cuentas la idea y yo diseño la ruta. Son 7 preguntas, no reserva nada.'
+        : 'Desliza la barra y el mundo te lleva. Cuando encuentres el tuyo, lo diseñamos juntos.',
+      bitanPortrait,
+      briefPct: Math.round(((st.briefStep + 1) / STEPS.length) * 100) + '%',
+      s: STEPS.reduce((acc, k) => { acc[k] = k === key; return acc; }, {}),
+      brief: b,
+      stepInvalid: !ok,
+      continueOpacity: ok ? 1 : 0.4,
+      continueLabel: last ? 'Preparar mi mensaje' : 'Continuar',
+      nextStep: () => {
+        if (!ok) return;
+        if (last) this.go('handoff');
+        else this.setState({ briefStep: st.briefStep + 1 });
+      },
+      prevStep: () => (st.briefStep === 0 ? this.go('home') : this.setState({ briefStep: st.briefStep - 1 })),
+
+      setDestination: e => this.patch({ destination: e.target.value, destinationUnknown: false }),
+      toggleUnknown: () => this.patch({ destinationUnknown: !b.destinationUnknown, destination: '' }),
+      unknownBorder: sel(b.destinationUnknown),
+      unknownColor: b.destinationUnknown ? SAND : 'rgba(244,235,216,.7)',
+
+      partyOptions: PARTY.map(p => ({
+        label: p.label, glyph: p.glyph,
+        border: sel(b.travelParty === p.value), bg: selBg(b.travelParty === p.value),
+        select: () => this.patch({ travelParty: p.value }),
+      })),
+
+      dateModes: [
+        { v:'exact', label:'Tengo fechas exactas' },
+        { v:'approximate', label:'Sé más o menos el mes' },
+        { v:'unknown', label:'Todavía no lo sé' },
+      ].map(m => ({
+        label: m.label, border: sel(b.dates.mode === m.v), bg: selBg(b.dates.mode === m.v),
+        select: () => this.patch({ dates: Object.assign({}, b.dates, { mode: m.v }) }),
+      })),
+      showExactDates: b.dates.mode === 'exact',
+      showMonth: b.dates.mode === 'approximate',
+      setStart: e => this.patch({ dates: Object.assign({}, b.dates, { start: e.target.value }) }),
+      setEnd: e => this.patch({ dates: Object.assign({}, b.dates, { end: e.target.value }) }),
+      setMonth: e => this.patch({ dates: Object.assign({}, b.dates, { month: e.target.value }) }),
+
+      vibeOptions: VIBES.map(v => {
+        const on = b.vibes.indexOf(v[0]) >= 0;
+        return {
+          label: v[1], border: sel(on), bg: selBg(on), color: on ? SAND : 'rgba(244,235,216,.75)',
+          toggle: () => this.patch({ vibes: on ? b.vibes.filter(x => x !== v[0]) : (b.vibes.length >= 3 ? b.vibes : b.vibes.concat([v[0]])) }),
+        };
+      }),
+
+      basisOptions: [['per_person','Por persona'],['total','Presupuesto total']].map(o => ({
+        label: o[1],
+        bg: b.budget.basis === o[0] ? 'rgba(212,180,131,.18)' : 'transparent',
+        color: b.budget.basis === o[0] ? SAND : 'rgba(244,235,216,.65)',
+        select: () => this.patch({ budget: Object.assign({}, b.budget, { basis: o[0] }) }),
+      })),
+      rangeOptions: RANGES.map(r => ({
+        label: r[1], border: sel(b.budget.range === r[0]), bg: selBg(b.budget.range === r[0]),
+        select: () => this.patch({ budget: Object.assign({}, b.budget, { range: r[0] }) }),
+      })),
+
+      axes: AXES.map(a => {
+        const val = b.travelStyle[a.key];
+        return {
+          left: a.left, right: a.right, value: val,
+          leftOpacity: val < 50 ? 0.9 : 0.4, rightOpacity: val > 50 ? 0.9 : 0.4,
+          set: e => this.patch({ travelStyle: Object.assign({}, b.travelStyle, { [a.key]: Number(e.target.value) }) }),
+        };
+      }),
+
+      summaryLines: [
+        (b.destinationUnknown ? 'Destino por definir' : (b.destination || 'Destino por definir')) + (b.travelParty ? ' · ' + PARTY_LABELS[b.travelParty] : '') + ' · ' + this.describeDates(),
+        b.vibes.length ? 'Buscamos ' + b.vibes.map(v => (VIBES.find(x => x[0] === v) || [])[1].toLowerCase()).join(', ') + '.' : 'Todavía sin definir qué quieres sentir.',
+        bucket(b.travelStyle.pace, 'Ver todo lo posible', 'Ritmo equilibrado', 'Tomarlo con calma') + ' · ' + bucket(b.travelStyle.structure, 'Todo bien planeado', 'Algo de estructura', 'Espacio para lo espontáneo'),
+      ].map(t => ({ text: t })),
+      setName: e => this.patch({ contact: Object.assign({}, b.contact, { name: e.target.value }) }),
+      setPhone: e => this.patch({ contact: Object.assign({}, b.contact, { whatsapp: e.target.value }) }),
+
+      waMessage: this.waMessage(),
+      waUrl: 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(this.waMessage()),
+      waPlain: 'https://wa.me/' + WA_NUMBER,
+      goHomeReset: () => this.setState({ screen: 'home', briefStep: 0 }),
+    };
+  }
+}
+</script>
+</body>
+</html>
