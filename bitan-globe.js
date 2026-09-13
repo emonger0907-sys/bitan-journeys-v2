@@ -7,8 +7,13 @@
 //
 // Attributes: pins='[{"i":0,"lat":..,"lng":..,"title":".."}]', selected="3",
 //   autorotate="true|false", zoom="1.0" (bigger = closer)
-// Events (bubble): 'bitan-pin' {detail:{i}} on tap, 'bitan-focus' {detail:{i}}
-//   when the pin nearest the center changes.
+//   visited='[{"i":0,"lat":..,"lng":..,"title":".."}]' — small, discreet secondary
+//   points (places visited, not full destinations); hidden until show-visited="true",
+//   then fade/scale in. They never trigger 'bitan-pin' — hover/tap just reveals a label.
+//   visited-selected="2" — rotates to that visited pin and marks it active (bigger,
+//   label pinned open); clearing it (empty string) just un-marks it.
+// Events (bubble): 'bitan-pin' {detail:{i}} on tap, 'bitan-visited' {detail:{i}} on
+//   tapping a visited pin, 'bitan-focus' {detail:{i}} when the pin nearest the center changes.
 (function () {
   const TOPO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json';
   let topoPromise = null;
@@ -19,8 +24,8 @@
   const hasWebGL = () => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch (e) { return false; } };
 
   class BitanGlobe extends HTMLElement {
-    constructor() { super(); this._pins = []; }
-    static get observedAttributes() { return ['selected', 'pins', 'focus-image', 'focus-pos', 'focusimage', 'focuspos']; }
+    constructor() { super(); this._pins = []; this._vpins = []; }
+    static get observedAttributes() { return ['selected', 'pins', 'visited', 'show-visited', 'showvisited', 'visited-selected', 'visitedselected', 'focus-image', 'focus-pos', 'focusimage', 'focuspos']; }
     _attr(a, b) { return this.getAttribute(a) || this.getAttribute(b); }
     connectedCallback() {
       if (this._started) return;
@@ -29,8 +34,13 @@
       this._rotY = -0.45; this._rotX = 0.12; this._vel = 0.0022;
       this._target = null;
       this._pins = [];
+      this._vpins = [];
+      this._activeVisited = null;
+      this._showVisited = this._attr('show-visited', 'showvisited') === 'true';
       this._buildPins();
+      this._buildVisitedPins();
       if (this.getAttribute('selected')) this.attributeChangedCallback('selected');
+      if (this._attr('visited-selected', 'visitedselected')) this.attributeChangedCallback('visited-selected');
       this._tries = 0;
       this._wait();
     }
@@ -38,6 +48,8 @@
     attributeChangedCallback(name) {
       if (!this._started) return;
       if (name === 'pins') this._buildPins();
+      if (name === 'visited') this._buildVisitedPins();
+      if (name === 'show-visited' || name === 'showvisited') this._showVisited = this._attr('show-visited', 'showvisited') === 'true';
       if (name === 'selected') {
         const raw = this.getAttribute('selected');
         const i = (raw === null || raw === '') ? null : Number(raw);
@@ -46,6 +58,19 @@
         else { this._target = null; this._zoomTo = 1; }
         this._selected = p ? i : null;
         this._pins.forEach(p => { const on = i !== null && p.i === i; p.core.style.width = p.core.style.height = on ? '13px' : '8px'; p.core.style.background = on ? '#fff6e0' : '#f4ebd8'; });
+      }
+      if (name === 'visited-selected' || name === 'visitedselected') {
+        const raw = this._attr('visited-selected', 'visitedselected');
+        const i = (raw === null || raw === '') ? null : Number(raw);
+        const p = i === null ? null : this._vpins.find(p => p.i === i);
+        if (p) { this._target = { y: -(p.lng + 90) * rad, x: Math.max(-0.5, Math.min(0.5, p.lat * rad * 0.45)) }; this._zoomTo = 1.3; }
+        this._activeVisited = p ? i : null;
+        this._vpins.forEach(vp => {
+          const on = i !== null && vp.i === i;
+          vp.core.style.width = vp.core.style.height = on ? '7px' : '4px';
+          vp.core.style.background = on ? '#fff6e0' : 'rgba(244,235,216,.8)';
+          vp.label.style.opacity = on ? '1' : '0';
+        });
       }
       if (name.indexOf('focus') === 0) this._syncPortrait();
     }
@@ -67,6 +92,38 @@
         dot.addEventListener('click', e => { e.stopPropagation(); this.dispatchEvent(new CustomEvent('bitan-pin', { detail: { i: d.i }, bubbles: true, composed: true })); });
         this.appendChild(dot);
         return { i: d.i, lat: d.lat, lng: d.lng, dot, core };
+      });
+    }
+    _buildVisitedPins() {
+      let data = [];
+      try { data = JSON.parse(this.getAttribute('visited') || '[]'); } catch (e) {}
+      (this._vpins || []).forEach(p => p.dot.remove());
+      this._vpins = data.map(d => {
+        // dot only ever gets a per-frame translate (no transition, or it'd lag behind
+        // rotation); the fade/scale reveal lives on `reveal` instead, transitioned.
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', d.title || '');
+        dot.style.cssText = 'position:absolute;left:0;top:0;width:20px;height:20px;margin:-10px 0 0 -10px;border:0;background:none;cursor:pointer;padding:0;pointer-events:none';
+        const reveal = document.createElement('span');
+        reveal.style.cssText = 'position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5);transition:opacity .5s ease,transform .5s ease';
+        const core = document.createElement('span');
+        core.style.cssText = 'position:relative;width:4px;height:4px;border-radius:50%;background:rgba(244,235,216,.8);box-shadow:0 0 5px rgba(212,180,131,.6);transition:all .3s ease';
+        const label = document.createElement('span');
+        label.textContent = d.title || '';
+        label.style.cssText = 'position:absolute;left:50%;bottom:100%;transform:translate(-50%,-5px);white-space:nowrap;padding:3px 8px;border-radius:6px;background:rgba(5,11,20,.92);color:#f4ebd8;font-size:10px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .2s ease;box-shadow:0 4px 14px rgba(0,0,0,.4)';
+        reveal.appendChild(core); reveal.appendChild(label);
+        dot.appendChild(reveal);
+        const showLabel = () => { label.style.opacity = '1'; };
+        const hideLabel = () => { if (this._activeVisited !== d.i) label.style.opacity = '0'; };
+        dot.addEventListener('pointerdown', e => e.stopPropagation());
+        dot.addEventListener('mouseenter', showLabel);
+        dot.addEventListener('mouseleave', hideLabel);
+        dot.addEventListener('focus', showLabel);
+        dot.addEventListener('blur', hideLabel);
+        dot.addEventListener('click', e => { e.stopPropagation(); this.dispatchEvent(new CustomEvent('bitan-visited', { detail: { i: d.i }, bubbles: true, composed: true })); });
+        this.appendChild(dot);
+        return { i: d.i, lat: d.lat, lng: d.lng, dot, reveal, core, label };
       });
     }
     _syncPortrait() {
@@ -229,6 +286,18 @@
           if (this._selected === p.i) this._placePortrait(px, py, front);
         }
         this._focusCheck(best);
+        for (const p of this._vpins) {
+          if (!p.v) p.v = pinV(p);
+          proj.copy(p.v).applyEuler(world.rotation);
+          const front = proj.z > 0.1;
+          proj.project(camera);
+          const px = (proj.x * 0.5 + 0.5) * w, py = (-proj.y * 0.5 + 0.5) * h;
+          const on = this._showVisited && front;
+          p.dot.style.transform = 'translate(' + px + 'px,' + py + 'px)';
+          p.dot.style.pointerEvents = on ? 'auto' : 'none';
+          p.reveal.style.opacity = on ? '1' : '0';
+          p.reveal.style.transform = 'scale(' + (on ? 1 : 0.5) + ')';
+        }
       };
       loop();
     }
@@ -267,6 +336,15 @@
           p.dot.style.opacity = front ? '1' : '0'; p.dot.style.pointerEvents = front ? 'auto' : 'none';
         }
         this._focusCheck(best);
+        for (const p of this._vpins) {
+          const pt = proj([p.lng, p.lat]);
+          const front = !!pt && d3.geoDistance([p.lng, p.lat], [lng0, lat0]) < Math.PI / 2 - 0.05;
+          const on = this._showVisited && front;
+          if (pt) { const px = ox + pt[0] * s, py = oy + pt[1] * s; p.dot.style.transform = 'translate(' + px + 'px,' + py + 'px)'; }
+          p.dot.style.pointerEvents = on ? 'auto' : 'none';
+          p.reveal.style.opacity = on ? '1' : '0';
+          p.reveal.style.transform = 'scale(' + (on ? 1 : 0.5) + ')';
+        }
       };
       loop();
     }

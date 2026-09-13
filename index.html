@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bitan Journeys — No te vendo el viaje, te ayudo a planearlo bien</title>
-<meta name="description" content="Diez viajes diseñados a fondo por Esteban. Gira el mundo, elige tu historia y diseñamos tu viaje juntos.">
+<meta name="description" content="Viajes diseñados a fondo por Esteban. Gira el mundo, elige tu historia y diseñamos tu viaje juntos.">
 <meta name="theme-color" content="#050b14">
 <link rel="icon" href="assets/brand/bitan-icon.png">
 <link rel="apple-touch-icon" href="assets/brand/bitan-icon.png">
@@ -94,10 +94,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
         <p style="margin:0;font-size:.9rem;opacity:.62;max-width:30ch;line-height:1.5;text-wrap:pretty">{{ v.headline }}</p>
       </div>
       <div ref="{{ globeHostM }}" style="flex:1;min-height:180px;position:relative;margin:0 -12vw">
-        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
+        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" visited="{{ visitedJson }}" show-visited="{{ showVisitedAttr }}" visited-selected="{{ focusVisitedAttr }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;gap:14px;padding:0 0 26px">
-        <div class="bj-rail" ref="{{ railM }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:6px calc(50% - 33px)">
+        <div class="bj-rail" ref="{{ railM }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:28px calc(50% - 33px)">
           <sc-for list="{{ strip }}" as="w" hint-placeholder-count="0">
             <button onClick="{{ w.select }}" aria-label="{{ w.title }}" style="flex:none;scroll-snap-align:center;width:66px;height:66px;padding:0;border:0;background:{{ w.bg }};border-radius:50%;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 {{ w.ring }} rgba(212,180,131,{{ w.ringA }}),0 0 22px rgba(212,180,131,{{ w.glowA }});transform:scale({{ w.scale }});transition:all .35s ease">
               <sc-if value="{{ w.isPhoto }}" hint-placeholder-val="{{ false }}">
@@ -110,12 +110,33 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           </sc-for>
         </div>
         <div style="padding:0 22px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
           <span style="font-size:.62rem;letter-spacing:.14em;color:#d4b483;text-align:center">{{ v.kicker }}</span>
           <button onClick="{{ v.open }}" style="width:100%;max-width:420px;padding:16px 0;border:1px solid rgba(212,180,131,.5);border-radius:999px;background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)" style-hover="border-color:rgba(212,180,131,.9)">{{ v.cta }}</button>
+          </sc-if>
           <div style="display:flex;gap:11px;align-items:center;justify-content:center;padding:2px 4px 0">
             <img src="assets/brand/bitan-wave.png" alt="Bitan" style="width:46px;height:46px;object-fit:contain;flex-shrink:0">
             <span style="font-size:.76rem;opacity:.6;line-height:1.45;text-align:left;max-width:32ch">{{ bitanHint }}</span>
           </div>
+          <button onClick="{{ toggleVisited }}" style="margin-top:2px;padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.68rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">{{ mapToggleLabel }}</button>
+          <sc-if value="{{ showVisited }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;max-width:420px;max-height:180px;overflow-y:auto;border:1px solid rgba(212,180,131,.16);border-radius:16px;background:rgba(5,11,20,.55)">
+            <sc-for list="{{ visitedList }}" as="p" hint-placeholder-count="0">
+              <button onClick="{{ p.select }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 14px;border:0;background:{{ p.rowBg }};cursor:pointer;text-align:left;transition:background .25s ease">
+                <sc-if value="{{ p.isFlag }}" hint-placeholder-val="{{ false }}">
+                  <img src="{{ p.flagUrl }}" alt="" style="width:18px;height:13px;object-fit:cover;border-radius:2px;flex-shrink:0;box-shadow:0 0 0 1px rgba(244,235,216,.15)">
+                </sc-if>
+                <sc-if value="{{ p.isEmoji }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:1.05rem;line-height:1;flex-shrink:0">{{ p.emoji }}</span>
+                </sc-if>
+                <span style="display:flex;flex-direction:column;min-width:0">
+                  <span style="font-size:.76rem;color:{{ p.nameColor }}">{{ p.name }}</span>
+                  <span style="font-size:.6rem;opacity:.5;color:#f4ebd8">{{ p.meta }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+          </sc-if>
         </div>
       </div>
     </div>
@@ -124,7 +145,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     <sc-if value="{{ desk }}" hint-placeholder-val="{{ false }}">
     <div style="flex:1;min-height:0;display:grid;grid-template-columns:1.2fr .8fr;grid-template-rows:minmax(0,1fr) auto;align-items:center;column-gap:clamp(20px,4vw,60px);padding:0 clamp(24px,5vw,72px)">
       <div ref="{{ globeHostD }}" style="grid-column:1;grid-row:1;position:relative;height:100%;min-height:0;margin-left:-6vw">
-        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
+        <x-import component-from-global-scope="bitan-globe" from="./bitan-globe.js" pins="{{ pinsJson }}" visited="{{ visitedJson }}" show-visited="{{ showVisitedAttr }}" visited-selected="{{ focusVisitedAttr }}" selected="{{ v.attr }}" focus-image="{{ v.heroImage }}" focus-pos="{{ v.heroPosition }}" palette="color" autorotate="{{ v.autorotate }}" zoom="{{ zoomAttr }}" style="position:absolute;inset:0" hint-size="100%,100%"></x-import>
       </div>
       <div style="grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:clamp(8px,1.6vh,16px);align-items:flex-start;max-width:460px;min-height:0;padding:12px 0">
         <span style="font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(244,235,216,.5)">{{ v.over }}</span>
@@ -137,7 +158,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           </sc-for>
         </div>
         </sc-if>
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ v.open }}" style="margin-top:6px;padding:15px 30px;border:1px solid rgba(212,180,131,.5);border-radius:999px;background:rgba(5,11,20,.6);color:#f4ebd8;font-size:.95rem;font-weight:500;cursor:pointer;box-shadow:0 8px 26px -6px rgba(212,180,131,.45)" style-hover="border-color:rgba(212,180,131,.9)">{{ v.cta }}</button>
+        </sc-if>
         <sc-if value="{{ roomy }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;gap:12px;align-items:center;padding:10px 16px 10px 10px;border-radius:20px;border:1px solid rgba(212,180,131,.18);background:linear-gradient(120deg,rgba(46,94,78,.16),rgba(14,58,95,.16))">
           <img src="assets/brand/bitan-wave.png" alt="Bitan" style="width:60px;height:60px;object-fit:contain;flex-shrink:0">
@@ -153,9 +176,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           <span style="font-size:.76rem;opacity:.6;line-height:1.4;max-width:34ch">{{ bitanHint }}</span>
         </div>
         </sc-if>
+        <button onClick="{{ toggleVisited }}" style="margin-top:2px;padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.7rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">{{ mapToggleLabel }}</button>
+        <sc-if value="{{ showVisited }}" hint-placeholder-val="{{ false }}">
+        <div style="width:100%;max-width:340px;max-height:200px;overflow-y:auto;border:1px solid rgba(212,180,131,.16);border-radius:16px;background:rgba(5,11,20,.55)">
+          <sc-for list="{{ visitedList }}" as="p" hint-placeholder-count="0">
+            <button onClick="{{ p.select }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 14px;border:0;background:{{ p.rowBg }};cursor:pointer;text-align:left;transition:background .25s ease" style-hover="background:rgba(244,235,216,.06)">
+              <sc-if value="{{ p.isFlag }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ p.flagUrl }}" alt="" style="width:18px;height:13px;object-fit:cover;border-radius:2px;flex-shrink:0;box-shadow:0 0 0 1px rgba(244,235,216,.15)">
+              </sc-if>
+              <sc-if value="{{ p.isEmoji }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size:1.05rem;line-height:1;flex-shrink:0">{{ p.emoji }}</span>
+              </sc-if>
+              <span style="display:flex;flex-direction:column;min-width:0">
+                <span style="font-size:.78rem;color:{{ p.nameColor }}">{{ p.name }}</span>
+                <span style="font-size:.62rem;opacity:.5;color:#f4ebd8">{{ p.meta }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
       </div>
       <div style="grid-column:1 / -1;grid-row:2;display:flex;flex-direction:column;gap:6px;padding:0 0 clamp(12px,2.6vh,26px)">
-        <div class="bj-rail" ref="{{ railD }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:8px calc(50% - 33px)">
+        <div class="bj-rail" ref="{{ railD }}" onScroll="{{ v.onScroll }}" style="display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:28px calc(50% - 33px)">
           <sc-for list="{{ strip }}" as="w" hint-placeholder-count="0">
             <button onClick="{{ w.select }}" aria-label="{{ w.title }}" style="flex:none;scroll-snap-align:center;width:66px;height:66px;padding:0;border:0;background:{{ w.bg }};border-radius:50%;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 {{ w.ring }} rgba(212,180,131,{{ w.ringA }}),0 0 22px rgba(212,180,131,{{ w.glowA }});transform:scale({{ w.scale }});transition:all .35s ease">
               <sc-if value="{{ w.isPhoto }}" hint-placeholder-val="{{ false }}">
@@ -167,7 +209,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
             </button>
           </sc-for>
         </div>
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
         <span style="text-align:center;font-size:.62rem;letter-spacing:.14em;color:#d4b483">{{ v.kicker }}</span>
+        </sc-if>
       </div>
     </div>
     </sc-if>
@@ -395,34 +439,37 @@ const WA_NUMBER = '50683785885';
 const STEP = 80;
 
 const D = [
-  { id:'01', title:'Acatenango Extremo', duration:'5 días', location:'Guatemala', image:'assets/journeys/acatenango-extremo.png', imagePosition:'50% 32%', tags:['Aventura','Volcanes','Naturaleza'], name:'Guatemala', heroImage:'assets/brand/bitan-guatemala.jpg', heroPosition:'50% 38%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Volcanes, pueblos y aventuras que se sienten enormes.', description:'Guatemala no es un destino que recomiendo por recomendar. Es uno de los viajes que más a fondo he diseñado: rutas, tiempos y logística ya pensados para que tú solo vivas la experiencia.', travelStyle:'Aventura + cultura', budgetLevel:'$ Presupuesto bajo', lat:14.6, lng:-90.5,
+  { title:'Acatenango Extremo', duration:'5 días', location:'Guatemala', image:'assets/journeys/acatenango-extremo.png', imagePosition:'50% 32%', tags:['Aventura','Volcanes','Naturaleza'], name:'Guatemala', heroImage:'assets/brand/bitan-guatemala.jpg', heroPosition:'50% 38%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Volcanes, pueblos y aventuras que se sienten enormes.', description:'Guatemala no es un destino que recomiendo por recomendar. Es uno de los viajes que más a fondo he diseñado: rutas, tiempos y logística ya pensados para que tú solo vivas la experiencia.', travelStyle:'Aventura + cultura', budgetLevel:'$ Presupuesto bajo', lat:14.6, lng:-90.5,
     highlights:[{name:'Acatenango',description:'La caminata que te pone frente al Fuego en plena erupción.'},{name:'Antigua Guatemala',description:'Calles coloniales, volcanes de fondo y la mejor base para aclimatar.'},{name:'Lago Atitlán',description:'Pueblos mayas alrededor de un lago rodeado de volcanes.'},{name:'Volcán Pacaya',description:'Un volcán activo donde caminas sobre roca volcánica todavía caliente.'}],
     bitanTip:'Si vas a Guatemala, no diseñaría este viaje sin dejarle una noche completa al Acatenango. Ver al Fuego despertar frente a ti cambia completamente la aventura.' },
-  { id:'02', title:'Roatán Escapadita', duration:'4 días', location:'Honduras', image:'assets/journeys/roatan-escapadita.png', imagePosition:'50% 62%', tags:['Playa','Snorkel','Relax'], name:'Roatán', heroImage:'assets/brand/bitan-roatan.jpg', heroPosition:'30% 46%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Playas, arrecifes y ese ritmo caribeño que no quieres soltar.', description:'Roatán es la escapada que diseño cuando alguien necesita desconectar de verdad: arrecife, agua turquesa y días que se sienten más largos de lo que son.', travelStyle:'Playa + snorkel', budgetLevel:'$$ Presupuesto medio-bajo', lat:16.3, lng:-86.5,
+  { title:'Roatán Escapadita', duration:'4 días', location:'Honduras', image:'assets/journeys/roatan-escapadita.png', imagePosition:'50% 62%', tags:['Playa','Snorkel','Relax'], name:'Roatán', heroImage:'assets/brand/bitan-roatan.jpg', heroPosition:'30% 46%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Playas, arrecifes y ese ritmo caribeño que no quieres soltar.', description:'Roatán es la escapada que diseño cuando alguien necesita desconectar de verdad: arrecife, agua turquesa y días que se sienten más largos de lo que son.', travelStyle:'Playa + snorkel', budgetLevel:'$$ Presupuesto medio-bajo', lat:16.3, lng:-86.5,
     highlights:[{name:'West Bay',description:'La playa más fotogénica de la isla, arena blanca y agua transparente.'},{name:'Arrecife de Roatán',description:'Parte de la segunda barrera de coral más grande del mundo, ideal para snorkel.'},{name:'West End',description:'El pueblo frente al mar donde termina cada día de buceo.'},{name:'Big French Cay',description:'Un cayo casi deshabitado, perfecto para snorkel en aguas transparentes.'}],
     bitanTip:'En Roatán no reservaría un hotel sin verificar que tenga acceso directo al arrecife — ahí está la mitad de la experiencia, no en la piscina.' },
-  { id:'03', title:'Medellín Escapadita', duration:'4 días', location:'Colombia', image:'assets/journeys/medellin-escapadita.png', imagePosition:'50% 58%', tags:['Ciudad','Cultura','Experiencias'], name:'Medellín', heroImage:'assets/brand/bitan-medellin.jpg', heroPosition:'32% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que reinventó su historia y se nota en cada barrio.', description:'Medellín no es solo una escapada de ciudad — es entender cómo un lugar puede transformarse. Diseñé este viaje para mostrar esa Medellín que sorprende a quien solo conocía su pasado.', travelStyle:'Ciudad + cultura', budgetLevel:'$ Presupuesto bajo', lat:6.2, lng:-75.6,
+  { title:'Medellín Escapadita', duration:'4 días', location:'Colombia', image:'assets/journeys/medellin-escapadita.png', imagePosition:'50% 58%', tags:['Ciudad','Cultura','Experiencias'], name:'Medellín', heroImage:'assets/brand/bitan-medellin.jpg', heroPosition:'32% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que reinventó su historia y se nota en cada barrio.', description:'Medellín no es solo una escapada de ciudad — es entender cómo un lugar puede transformarse. Diseñé este viaje para mostrar esa Medellín que sorprende a quien solo conocía su pasado.', travelStyle:'Ciudad + cultura', budgetLevel:'$ Presupuesto bajo', lat:6.2, lng:-75.6,
     highlights:[{name:'Comuna 13',description:'Grafitis, escaleras eléctricas y una de las historias de transformación urbana más fuertes de Latinoamérica.'},{name:'El Poblado',description:'La base perfecta para moverse, comer bien y salir de noche.'},{name:'Guatapé',description:'Un día completo fuera de la ciudad, con el Peñón y su vista de 360°.'},{name:'Metrocable',description:'La forma más honesta de ver Medellín — colgado sobre la ciudad.'}],
     bitanTip:'Si te gusta el fútbol, buscaría un partido de Nacional o Independiente Medellín. La energía de sus barras te va a dejar anonadado.' },
-  { id:'04', title:'Perú Aventura', duration:'9 días', location:'Perú', image:'assets/journeys/peru-aventura.png', imagePosition:'50% 55%', tags:['Historia','Cultura','Naturaleza'], name:'Perú', heroImage:'assets/brand/bitan-peru.jpg', heroPosition:'28% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Montañas, historia y un final que ya conoces: Machu Picchu.', description:'Perú es de los viajes que más a fondo he diseñado — porque hay demasiado en juego como para improvisar rutas, altura y tiempos.', travelStyle:'Historia + aventura', budgetLevel:'$$ Presupuesto medio', lat:-13.2, lng:-72.5,
+  { title:'Perú Aventura', duration:'9 días', location:'Perú', image:'assets/journeys/peru-aventura.png', imagePosition:'50% 55%', tags:['Historia','Cultura','Naturaleza'], name:'Perú', heroImage:'assets/brand/bitan-peru.jpg', heroPosition:'28% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Montañas, historia y un final que ya conoces: Machu Picchu.', description:'Perú es de los viajes que más a fondo he diseñado — porque hay demasiado en juego como para improvisar rutas, altura y tiempos.', travelStyle:'Historia + aventura', budgetLevel:'$$ Presupuesto medio', lat:-13.2, lng:-72.5,
     highlights:[{name:'Machu Picchu',description:'La ciudadela inca que justifica por sí sola el viaje.'},{name:'Valle Sagrado',description:'Pueblos, mercados y ruinas que preparan el cuerpo y la cabeza para la altura.'},{name:'Cusco',description:'Calles coloniales construidas literalmente sobre piedra inca.'},{name:'Montaña de 7 Colores',description:'Una caminata exigente con una de las vistas más particulares de Sudamérica.'}],
     bitanTip:'No diseñaría un viaje a Perú sin al menos dos días en Cusco antes de subir a Machu Picchu — la altura no perdona a quien llega directo.' },
-  { id:'05', title:'Argentina Sur', duration:'12 días', location:'Argentina', image:'assets/journeys/argentina-sur.png', imagePosition:'50% 48%', tags:['Glaciares','Naturaleza','Exploración'], name:'Argentina Sur', heroImage:'assets/brand/bitan-argentina-sur.jpg', heroPosition:'30% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Glaciares, montañas afiladas y una Patagonia que se siente infinita.', description:'El sur argentino es otro país dentro del mismo país. Diseñé esta ruta para quien quiere naturaleza extrema sin perder tiempo en logística mal pensada.', travelStyle:'Naturaleza + trekking', budgetLevel:'$$$ Presupuesto alto', lat:-50.5, lng:-72.5,
+  { title:'Bolivia Altiplano', duration:'8 días', location:'Bolivia', image:'assets/journeys/bolivia-aventura.png', imagePosition:'50% 50%', tags:['Paisajes','Naturaleza','Aventura'], name:'Bolivia', heroImage:'assets/brand/bitan-bolivia.png', heroPosition:'34% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Desiertos de sal, altura extrema y paisajes que parecen otro planeta.', description:'Bolivia es de esos países que cambian la manera de ver el paisaje — salares infinitos, colores imposibles y una altura que exige respetar el itinerario. Lo diseñé para que la experiencia sea tan segura como memorable.', travelStyle:'Naturaleza + aventura', budgetLevel:'$$ Presupuesto medio', lat:-20.1, lng:-67.5,
+    highlights:[{name:'Salar de Uyuni',description:'El desierto de sal más grande del mundo, un espejo infinito cuando llueve.'},{name:'La Paz',description:'La capital más alta del mundo, colgada entre montañas y teleféricos urbanos.'},{name:'Torotoro',description:'Un valle que fue tierra de dinosaurios — huellas fosilizadas y cavernas profundas para explorar.'},{name:'Laguna Colorada',description:'Una laguna rosa en pleno Altiplano, hogar de más de 70,000 flamencos.'}],
+    bitanTip:'En Bolivia no diseñaría el viaje sin días de aclimatación antes de subir a los más de 4,000 metros del Altiplano — la altura ahí no perdona a quien llega directo.' },
+  { title:'Argentina Sur', duration:'12 días', location:'Argentina', image:'assets/journeys/argentina-sur.png', imagePosition:'50% 48%', tags:['Glaciares','Naturaleza','Exploración'], name:'Argentina Sur', heroImage:'assets/brand/bitan-argentina-sur.jpg', heroPosition:'30% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Glaciares, montañas afiladas y una Patagonia que se siente infinita.', description:'El sur argentino es otro país dentro del mismo país. Diseñé esta ruta para quien quiere naturaleza extrema sin perder tiempo en logística mal pensada.', travelStyle:'Naturaleza + trekking', budgetLevel:'$$$ Presupuesto alto', lat:-50.5, lng:-72.5,
     highlights:[{name:'Perito Moreno',description:'Un glaciar que sigue avanzando — y se puede escuchar romperse.'},{name:'Bariloche',description:'Lagos, chocolate y la Patagonia andina en su versión más pintoresca.'},{name:'Ushuaia',description:'El fin del mundo, literalmente, y la puerta a la Antártida.'},{name:'Buenos Aires',description:'La capital porteña, para cerrar el viaje con tango, arquitectura y vida de ciudad.'}],
     bitanTip:'En la Patagonia no diseñaría el viaje sin días de margen — el clima manda, y las mejores vistas aparecen cuando menos las esperas.' },
-  { id:'06', title:'Argentina Norte', duration:'10 días', location:'Argentina', image:'assets/journeys/argentina-norte.png', imagePosition:'50% 45%', tags:['Paisajes','Cultura','Aventura'], name:'Argentina Norte', heroImage:'assets/brand/bitan-argentina-norte.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Desiertos de colores, vino de altura y pueblos que el tiempo dejó atrás.', description:'El norte argentino es un viaje distinto al sur — más desierto, más color, más historia. Lo diseñé como una ruta propia, no como un anexo de otro itinerario.', travelStyle:'Paisajes + cultura', budgetLevel:'$$ Presupuesto medio', lat:-23.6, lng:-65.4,
+  { title:'Argentina Norte', duration:'10 días', location:'Argentina', image:'assets/journeys/argentina-norte.png', imagePosition:'50% 45%', tags:['Paisajes','Cultura','Aventura'], name:'Argentina Norte', heroImage:'assets/brand/bitan-argentina-norte.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Desiertos de colores, vino de altura y pueblos que el tiempo dejó atrás.', description:'El norte argentino es un viaje distinto al sur — más desierto, más color, más historia. Lo diseñé como una ruta propia, no como un anexo de otro itinerario.', travelStyle:'Paisajes + cultura', budgetLevel:'$$ Presupuesto medio', lat:-23.6, lng:-65.4,
     highlights:[{name:'Quebrada de Humahuaca',description:'Cerros de siete colores y pueblos que parecen suspendidos en el tiempo.'},{name:'Salinas Grandes',description:'Un desierto de sal blanco hasta donde alcanza la vista.'},{name:'Cafayate',description:'Vino de altura entre montañas rojas.'},{name:'Purmamarca',description:'Base perfecta para moverse por la Quebrada sin prisa.'}],
     bitanTip:'En Purmamarca no iría solo a tomar la foto y seguir. Métete en el pueblo, conversa, camina y déjate envolver por la cultura andina. Se siente como viajar en el tiempo a un lugar donde sus raíces todavía están profundamente vivas.' },
-  { id:'07', title:'Road Trip Canadá', duration:null, location:'Vancouver → Calgary · Canadá', image:'assets/journeys/canada-road-trip.png', imagePosition:'50% 58%', tags:['Naturaleza','Montañas','Road Trip'], name:'Road Trip Canadá', heroImage:'assets/brand/bitan-canada.jpg', heroPosition:'24% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Carretera, montañas nevadas y lagos que parecen pintados.', description:'Este no es un destino, es una ruta — de Vancouver a Calgary, con paradas que hacen que el camino sea tan importante como el destino.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:51.2, lng:-115.6,
+  { title:'Road Trip Canadá', duration:null, location:'Vancouver → Calgary · Canadá', image:'assets/journeys/canada-road-trip.png', imagePosition:'50% 58%', tags:['Naturaleza','Montañas','Road Trip'], name:'Road Trip Canadá', heroImage:'assets/brand/bitan-canada.jpg', heroPosition:'24% 44%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Carretera, montañas nevadas y lagos que parecen pintados.', description:'Este no es un destino, es una ruta — de Vancouver a Calgary, con paradas que hacen que el camino sea tan importante como el destino.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:51.2, lng:-115.6,
     highlights:[{name:'Banff',description:'El parque nacional que define la imagen de las Rocosas canadienses.'},{name:'Lake Louise',description:'Un lago turquesa rodeado de glaciares que se ve mejor en persona que en fotos.'},{name:'Icefields Parkway',description:'Una de las carreteras más espectaculares del mundo, sin exagerar.'},{name:'Jasper',description:'Naturaleza salvaje y cielos oscuros al final del Icefields Parkway.'}],
     bitanTip:'Si haces este road trip, no lo diseñaría sin tiempo extra en el Icefields Parkway — es de esos caminos donde vas a querer parar cada cinco minutos.' },
-  { id:'08', title:'Road Trip USA', duration:null, location:'Utah · Wyoming · Montana · Idaho · Washington', image:'assets/journeys/usa-road-trip.png', imagePosition:'50% 42%', tags:['Parques','Naturaleza','Road Trip'], name:'Road Trip USA', heroImage:'assets/brand/bitan-usa-roadtrip.jpg', heroPosition:'24% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Parques nacionales, carreteras eternas y paisajes que cambian cada día.', description:'Un road trip por el oeste de Estados Unidos diseñado para conectar los parques que más vale la pena ver — sin desperdiciar días manejando de más.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:44.4, lng:-110.6,
+  { title:'Road Trip USA', duration:null, location:'Utah · Wyoming · Montana · Idaho · Washington', image:'assets/journeys/usa-road-trip.png', imagePosition:'50% 42%', tags:['Parques','Naturaleza','Road Trip'], name:'Road Trip USA', heroImage:'assets/brand/bitan-usa-roadtrip.jpg', heroPosition:'24% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Parques nacionales, carreteras eternas y paisajes que cambian cada día.', description:'Un road trip por el oeste de Estados Unidos diseñado para conectar los parques que más vale la pena ver — sin desperdiciar días manejando de más.', travelStyle:'Road trip + naturaleza', budgetLevel:'$$$ Presupuesto alto', lat:44.4, lng:-110.6,
     highlights:[{name:'Yellowstone',description:'Géiseres, vida salvaje y el parque nacional más antiguo del mundo.'},{name:'Grand Teton',description:'Montañas que parecen sacadas de una postal, a minutos de Yellowstone.'},{name:'Glacier National Park',description:'Naturaleza intacta antes de que sus glaciares desaparezcan.'},{name:'North Cascades',description:'Picos alpinos y lagos glaciares en el rincón más salvaje de Washington.'}],
     bitanTip:'En un road trip así, no diseñaría el viaje sin bloques de manejo más cortos de lo normal — los paisajes te van a hacer parar más de lo que planeas.' },
-  { id:'09', title:'New York', duration:null, location:'EE.UU.', image:'assets/journeys/new-york.png', imagePosition:'62% 55%', tags:['Ciudad','Cultura','Gastronomía'], name:'New York', heroImage:'assets/brand/bitan-newyork.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que se explora mejor caminando, cuadra por cuadra.', description:'La ciudad que has visto en tantas películas de repente cobra vida frente a ti.', travelStyle:'Ciudad a pie', budgetLevel:'$$$ Presupuesto alto', lat:40.7, lng:-74.0,
+  { title:'New York', duration:null, location:'EE.UU.', image:'assets/journeys/new-york.png', imagePosition:'62% 55%', tags:['Ciudad','Cultura','Gastronomía'], name:'New York', heroImage:'assets/brand/bitan-newyork.jpg', heroPosition:'28% 42%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Una ciudad que se explora mejor caminando, cuadra por cuadra.', description:'La ciudad que has visto en tantas películas de repente cobra vida frente a ti.', travelStyle:'Ciudad a pie', budgetLevel:'$$$ Presupuesto alto', lat:40.7, lng:-74.0,
     highlights:[{name:'5th Avenue',description:'La avenida icónica para caminar, mirar vitrinas y sentir el pulso de la ciudad.'},{name:'Central Park',description:'El respiro verde en medio de los rascacielos.'},{name:'Hudson Yards',description:'Arquitectura moderna, tiendas y una de las zonas más nuevas de Manhattan.'},{name:'SUMMIT One Vanderbilt',description:'Un mirador inmersivo que reinventa la manera de ver Manhattan desde arriba.'}],
     bitanTip:'En New York no diseñaría el viaje alrededor del metro — la ciudad se entiende mejor cuando caminas entre una parada y la siguiente.' },
-  { id:'10', title:'California Coast', duration:'10 días', location:'Los Ángeles → San Francisco · EE.UU.', image:'assets/journeys/california-coast.jpg', imagePosition:'40% 50%', tags:['Road trip','Ciudades','Costa','Parques nacionales'], name:'California Coast', heroImage:'assets/brand/bitan-california-coast.jpg', heroPosition:'32% 68%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Donde la carretera conecta ciudades, gigantes y Pacífico.', description:'California Coast no es solo playa — es un road trip diseñado a fondo que conecta grandes ciudades, carreteras costeras, desierto y parques nacionales con árboles gigantes.', travelStyle:'Road trip + ciudades', budgetLevel:'$$$ Presupuesto alto', lat:36.5, lng:-119.5,
+  { title:'California Coast', duration:'10 días', location:'Los Ángeles → San Francisco · EE.UU.', image:'assets/journeys/california-coast.jpg', imagePosition:'40% 50%', tags:['Road trip','Ciudades','Costa','Parques nacionales'], name:'California Coast', heroImage:'assets/brand/bitan-california-coast.jpg', heroPosition:'32% 68%', eyebrow:'Un viaje que ya diseñé a fondo', headline:'Donde la carretera conecta ciudades, gigantes y Pacífico.', description:'California Coast no es solo playa — es un road trip diseñado a fondo que conecta grandes ciudades, carreteras costeras, desierto y parques nacionales con árboles gigantes.', travelStyle:'Road trip + ciudades', budgetLevel:'$$$ Presupuesto alto', lat:36.5, lng:-119.5,
     highlights:[{name:'Los Ángeles',description:'Ciudad, costa y punto natural para comenzar la ruta.'},{name:'San Francisco',description:'Barrios, bahía y una de las ciudades más icónicas del West Coast.'},{name:'Sequoia + Kings Canyon',description:'Carreteras de montaña y algunos de los paisajes de árboles gigantes más impresionantes del viaje.'},{name:'Yosemite',description:'Formaciones de granito, cascadas y uno de los parques más icónicos de California.'}],
     bitanTip:'En California no intentaría ganarle kilómetros al mapa. Dejaría que la costa, los parques y las ciudades cambien el ritmo del viaje. Parte de lo mejor del West Coast ocurre entre un destino y el siguiente. Si quieres cambiar el ritmo de la ruta —o volver a hacerla de una forma distinta— Las Vegas + Grand Canyon funcionan como una excelente extensión alternativa.' },
 ];
@@ -451,20 +498,58 @@ const AXES = [
 ];
 const STEPS = ['destino','party','dates','vibe','budget','style','closing'];
 const PINS_JSON = JSON.stringify(D.map((d, i) => ({ i, lat: d.lat, lng: d.lng, title: d.title })));
+
+// Lugares visitados por Esteban — segunda capa del globo, discreta, sin thumbnail
+// ni CTA. Para países completos se usa una coordenada representativa; Palestina
+// e Israel usan cada uno un punto geográfico neutral (no una capital en disputa).
+const VISITED = [
+  { name:'Bocas del Toro', country:'Panamá', type:'Islas', lat:9.34, lng:-82.25, emoji:'🏝️' },
+  { name:'Cancún', country:'México', type:'Ciudad', lat:21.16, lng:-86.85, emoji:'🏖️' },
+  { name:'Ciudad de México', country:'México', type:'Ciudad', lat:19.43, lng:-99.13, emoji:'🏙️' },
+  { name:'Los Cabos', country:'México · Baja California Sur', type:'Región', lat:22.89, lng:-109.92, emoji:'🐋' },
+  { name:'Miami', country:'Estados Unidos', type:'Ciudad', lat:25.76, lng:-80.19, emoji:'🌆' },
+  { name:'Orlando', country:'Estados Unidos', type:'Ciudad', lat:28.54, lng:-81.38, emoji:'🎢' },
+  { name:'Las Vegas', country:'Estados Unidos', type:'Ciudad', lat:36.17, lng:-115.14, emoji:'🎰' },
+  { name:'Los Ángeles', country:'Estados Unidos', type:'Ciudad', lat:34.05, lng:-118.24, emoji:'🎬' },
+  { name:'San Francisco', country:'Estados Unidos', type:'Ciudad', lat:37.77, lng:-122.42, emoji:'🌉' },
+  { name:'Seattle', country:'Estados Unidos', type:'Ciudad', lat:47.61, lng:-122.33, emoji:'☕' },
+  { name:'Grand Canyon National Park', country:'Estados Unidos', type:'Parque nacional', lat:36.11, lng:-112.11, emoji:'🏜️' },
+  { name:'Sequoia & Kings Canyon National Parks', country:'Estados Unidos', type:'Parque nacional', lat:36.49, lng:-118.57, emoji:'🌳' },
+  { name:'Glacier National Park', country:'Estados Unidos', type:'Parque nacional', lat:48.76, lng:-113.79, emoji:'🏔️' },
+  { name:'North Cascades National Park', country:'Estados Unidos', type:'Parque nacional', lat:48.77, lng:-121.30, emoji:'⛰️' },
+  { name:'Yosemite National Park', country:'Estados Unidos', type:'Parque nacional', lat:37.87, lng:-119.54, emoji:'🏞️' },
+  { name:'Yellowstone National Park', country:'Estados Unidos', type:'Parque nacional', lat:44.43, lng:-110.59, emoji:'🌋' },
+  { name:'Mount Rainier National Park', country:'Estados Unidos', type:'Parque nacional', lat:46.88, lng:-121.73, emoji:'🗻' },
+  { name:'Grand Teton National Park', country:'Estados Unidos', type:'Parque nacional', lat:43.79, lng:-110.68, emoji:'🦌' },
+  { name:'Egipto', country:'Egipto', type:'País', lat:30.04, lng:31.24, flag:'eg' },
+  { name:'Jordania', country:'Jordania', type:'País', lat:31.95, lng:35.93, flag:'jo' },
+  { name:'Palestina', country:'Palestina', type:'Territorio', lat:31.90, lng:35.20, flag:'ps' },
+  { name:'Israel', country:'Israel', type:'País', lat:32.09, lng:34.78, flag:'il' },
+  { name:'Copenhague', country:'Dinamarca', type:'Ciudad', lat:55.68, lng:12.57, emoji:'🧜‍♀️' },
+  { name:'Helsingborg', country:'Suecia', type:'Ciudad', lat:56.05, lng:12.69, emoji:'🏰' },
+  { name:'Chennai', country:'India', type:'Ciudad', lat:13.08, lng:80.27, emoji:'🛕' },
+  { name:'Aruba', country:'Aruba', type:'Isla', lat:12.52, lng:-70.03, flag:'aw' },
+  { name:'Curaçao', country:'Curaçao', type:'Isla', lat:12.11, lng:-68.93, flag:'cw' },
+  { name:'Costa Rica', country:'Costa Rica', type:'País', lat:9.93, lng:-84.09, flag:'cr' },
+];
+const VISITED_JSON = JSON.stringify(VISITED.map((v, i) => ({ i, lat: v.lat, lng: v.lng, title: v.name })));
 const SCREENS = { 'Intro':'intro', 'El mundo':'home', 'Un viaje':'journey', 'Brief':'brief', 'WhatsApp':'handoff' };
 
 const ONBOARDING = [
-  { eyebrow:'El mismo planeta', title:'Historias distintas.', body:'Diez viajes que ya diseñé a fondo, abiertos para que los recorras antes de decidir.', cta:'Seguir', image:'assets/journeys/argentina-sur.png' },
+  { eyebrow:'El mismo planeta', title:'Historias distintas.', body:'Los viajes que ya diseñé a fondo, abiertos para que los recorras antes de decidir.', cta:'Seguir', image:'assets/journeys/argentina-sur.png' },
   { eyebrow:'Cómo trabajo', title:'No te vendo el viaje.', body:'Investigo, comparo y optimizo rutas, vuelos, hoteles y tiempos. Tú mantienes el control de cada reserva.', cta:'Seguir', image:'assets/journeys/peru-aventura.png' },
   { eyebrow:'Tu compañero de ruta', title:'Bitan viaja contigo.', body:'Te acompaña mientras exploras, y cambia de destino contigo. Cuando encuentres el tuyo, hablamos por WhatsApp.', cta:'Empezar a explorar', image:'assets/journeys/canada-road-trip.png' },
 ];
 
 const meta = d => (d.duration ? d.duration + ' · ' + d.location : d.location);
+const ONBOARD_KEY = 'bj_onboarded_v1';
+const hasOnboarded = () => { try { return localStorage.getItem(ONBOARD_KEY) === '1'; } catch (e) { return false; } };
+const setOnboarded = () => { try { localStorage.setItem(ONBOARD_KEY, '1'); } catch (e) {} };
 const bucket = (v, lo, mid, hi) => (v < 34 ? lo : v > 66 ? hi : mid);
 
 class Component extends DCLogic {
   state = {
-    screen: null, obStep: 0, sel: 0, active: 0, visited: [], briefStep: 0,
+    screen: null, obStep: 0, sel: null, active: 0, visited: [], briefStep: 0, showVisited: false, focusedVisited: null,
     desk: typeof window !== 'undefined' && window.innerWidth >= 820,
     tall: typeof window !== 'undefined' && window.innerHeight >= 700,
     brief: {
@@ -481,14 +566,21 @@ class Component extends DCLogic {
   railD = React.createRef();
   railM = React.createRef();
 
-  screen() { return this.state.screen || SCREENS[this.props.startScreen] || 'intro'; }
+  screen() {
+    if (this.state.screen) return this.state.screen;
+    const resolved = SCREENS[this.props.startScreen] || 'intro';
+    return (resolved === 'intro' && hasOnboarded()) ? 'home' : resolved;
+  }
+  finishOnboarding = () => { setOnboarded(); this.go('home'); };
   rail() { return (this.state.desk ? this.railD.current : this.railM.current); }
 
   onPin = e => this.pick(e.detail.i, true);
+  onVisitedPin = e => this.setState({ focusedVisited: e.detail.i, sel: null });
   onKey = e => {
     if (this.screen() !== 'home') return;
-    if (e.key === 'ArrowRight') this.pick(Math.min(D.length, this.state.sel + 1), true);
-    if (e.key === 'ArrowLeft') this.pick(Math.max(0, this.state.sel - 1), true);
+    const cur = this.state.sel ?? -1;
+    if (e.key === 'ArrowRight') this.pick(Math.min(D.length, cur + 1), true);
+    if (e.key === 'ArrowLeft') this.pick(Math.max(0, cur - 1), true);
   };
 
   componentDidMount() {
@@ -511,6 +603,7 @@ class Component extends DCLogic {
     const host = this.state.desk ? this.globeHostD.current : this.globeHostM.current;
     if (host && host !== this.bound) {
       host.addEventListener('bitan-pin', this.onPin);
+      host.addEventListener('bitan-visited', this.onVisitedPin);
       this.bound = host;
     }
     const r = this.rail();
@@ -522,11 +615,13 @@ class Component extends DCLogic {
 
   pick(i, scroll) {
     if (scroll) { const r = this.rail(); if (r) r.scrollTo({ left: i * STEP, behavior: 'smooth' }); }
-    if (i !== this.state.sel) this.setState({ sel: i });
+    if (i !== this.state.sel) this.setState({ sel: i, focusedVisited: null });
   }
 
   patch(part) { this.setState(s => ({ brief: Object.assign({}, s.brief, part) })); }
   go = screen => this.setState({ screen });
+  toggleVisited = () => this.setState(s => ({ showVisited: !s.showVisited, focusedVisited: s.showVisited ? null : s.focusedVisited }));
+  pickVisited = i => this.setState(s => ({ focusedVisited: s.focusedVisited === i ? null : i, sel: null }));
 
   openJourney = i => this.setState(s => ({
     screen: 'journey', active: i,
@@ -582,8 +677,9 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state, b = st.brief;
     const screen = this.screen();
-    const free = st.sel >= D.length;
-    const cur = D[Math.min(st.sel, D.length - 1)];
+    const hasSel = st.sel !== null && st.sel !== undefined;
+    const free = hasSel && st.sel >= D.length;
+    const cur = hasSel ? D[Math.min(st.sel, D.length - 1)] : null;
     const aj = D[st.active];
     const key = STEPS[Math.min(st.briefStep, STEPS.length - 1)];
     const last = st.briefStep >= STEPS.length - 1;
@@ -621,10 +717,10 @@ class Component extends DCLogic {
         body: ONBOARDING[st.obStep].body,
         cta: ONBOARDING[st.obStep].cta,
         bg: 'url(' + ONBOARDING[st.obStep].image + ')',
-        next: () => (st.obStep < ONBOARDING.length - 1 ? this.setState({ obStep: st.obStep + 1 }) : this.go('home')),
+        next: () => (st.obStep < ONBOARDING.length - 1 ? this.setState({ obStep: st.obStep + 1 }) : this.finishOnboarding()),
       },
       obDots: ONBOARDING.map((_, i) => ({ w: i === st.obStep ? '22px' : '4px', bg: i === st.obStep ? SAND : 'rgba(244,235,216,.25)' })),
-      skipIntro: () => this.go('home'),
+      skipIntro: () => this.finishOnboarding(),
       isHome: screen === 'home',
       isJourney: screen === 'journey',
       isBrief: screen === 'brief',
@@ -634,26 +730,43 @@ class Component extends DCLogic {
       goBrief: () => this.setState({ screen: 'brief', briefStep: 0 }),
       zoomAttr: String(this.props.globeZoom || 0.82),
       pinsJson: PINS_JSON,
+      visitedJson: VISITED_JSON,
+      showVisitedAttr: st.showVisited ? 'true' : 'false',
+      focusVisitedAttr: st.focusedVisited === null ? '' : String(st.focusedVisited),
+      hasSel,
       globeHostD: this.globeHostD,
       globeHostM: this.globeHostM,
       railD: this.railD,
       railM: this.railM,
       strip,
+      mapToggleLabel: st.showVisited ? 'Ocultar mi mapa de viajes' : 'Ver mi mapa de viajes',
+      toggleVisited: this.toggleVisited,
+      showVisited: st.showVisited,
+      visitedList: VISITED.map((p, i) => {
+        const on = i === st.focusedVisited;
+        return {
+          isFlag: !!p.flag, isEmoji: !p.flag, flagUrl: p.flag ? 'https://flagcdn.com/w40/' + p.flag + '.png' : '',
+          emoji: p.emoji || '📍', name: p.name, meta: p.type + ' · ' + p.country,
+          rowBg: on ? 'rgba(212,180,131,.16)' : 'transparent',
+          nameColor: on ? '#d4b483' : '#f4ebd8',
+          select: () => this.pickVisited(i),
+        };
+      }),
 
       v: {
-        over: free ? 'Sin destino todavía' : 'Ahora sobre',
-        name: free ? FREE.name : cur.name,
-        headline: free ? FREE.headline : cur.headline,
-        attr: free ? '' : String(st.sel),
-        autorotate: free || spin ? 'true' : 'false',
-        heroImage: free ? '' : cur.heroImage,
-        heroPosition: free ? '50% 35%' : cur.heroPosition,
-        kicker: free ? 'Empieza de cero · 7 preguntas' : cur.id + ' / 10 · ' + meta(cur),
-        cta: free ? 'Quiero diseñar un viaje con Bitan →' : 'Ver destino →',
-        chips: free ? [] : [cur.duration, cur.location, cur.travelStyle, cur.budgetLevel].filter(Boolean).map(l => ({ label: l })),
+        over: !hasSel ? 'EXPLORA EL MUNDO' : free ? 'Sin destino todavía' : 'Ahora sobre',
+        name: !hasSel ? '¿A dónde vamos?' : free ? FREE.name : cur.name,
+        headline: !hasSel ? 'Desliza las aventuras y deja que el mundo te lleve.' : free ? FREE.headline : cur.headline,
+        attr: (!hasSel || free) ? '' : String(st.sel),
+        autorotate: (!hasSel || free || spin) ? 'true' : 'false',
+        heroImage: (!hasSel || free) ? '' : cur.heroImage,
+        heroPosition: (!hasSel || free) ? '50% 35%' : cur.heroPosition,
+        kicker: !hasSel ? '' : free ? 'Empieza de cero · 7 preguntas' : String(st.sel + 1).padStart(2, '0') + ' / ' + D.length + ' · ' + meta(cur),
+        cta: !hasSel ? '' : free ? 'Quiero diseñar un viaje con Bitan →' : 'Ver destino →',
+        chips: (!hasSel || free) ? [] : [cur.duration, cur.location, cur.travelStyle, cur.budgetLevel].filter(Boolean).map(l => ({ label: l })),
         onScroll: e => {
           const i = Math.max(0, Math.min(D.length, Math.round(e.currentTarget.scrollLeft / STEP)));
-          if (i !== st.sel) this.setState({ sel: i });
+          if (i !== st.sel) this.setState({ sel: i, focusedVisited: null });
         },
         open: () => {
           if (free) { this.patch({ destination: '', destinationUnknown: false }); this.setState({ screen: 'brief', briefStep: 0 }); }
