@@ -324,21 +324,35 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           </sc-for>
           <sc-if value="{{ showExactDates }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-wrap:wrap;gap:10px">
-              <label style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left">
+              <button onClick="{{ openStartCal }}" style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left;padding:13px;border-radius:14px;border:1px solid {{ startFieldBorder }};background:rgba(244,235,216,.03);cursor:pointer">
                 <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Salida</span>
-                <input type="date" value="{{ brief.dates.start }}" onChange="{{ setStart }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
-              </label>
-              <label style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left">
+                <span style="font-size:.9rem;color:{{ startFieldColor }}">{{ dateStartLabel }}</span>
+              </button>
+              <button onClick="{{ openEndCal }}" style="flex:1;min-width:150px;display:flex;flex-direction:column;gap:6px;text-align:left;padding:13px;border-radius:14px;border:1px solid {{ endFieldBorder }};background:rgba(244,235,216,.03);cursor:pointer">
                 <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Regreso</span>
-                <input type="date" value="{{ brief.dates.end }}" onChange="{{ setEnd }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
-              </label>
+                <span style="font-size:.9rem;color:{{ endFieldColor }}">{{ dateEndLabel }}</span>
+              </button>
             </div>
           </sc-if>
           <sc-if value="{{ showMonth }}" hint-placeholder-val="{{ false }}">
-            <label style="display:flex;flex-direction:column;gap:6px;text-align:left">
-              <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Mes aproximado</span>
-              <input type="month" value="{{ brief.dates.month }}" onChange="{{ setMonth }}" style="padding:13px;border-radius:14px;border:1px solid rgba(244,235,216,.16);background:rgba(244,235,216,.03);color:#f4ebd8;font-size:.9rem">
-            </label>
+            <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+              <button onClick="{{ openApproxStart }}" style="display:flex;flex-direction:column;gap:6px;text-align:left;padding:13px;border-radius:14px;border:1px solid {{ approxStartBorder }};background:rgba(244,235,216,.03);cursor:pointer">
+                <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Mes aproximado</span>
+                <span style="font-size:.9rem;color:{{ approxStartColor }}">{{ approxStartLabel }}</span>
+              </button>
+              <sc-if value="{{ hasApproxEnd }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <button onClick="{{ openApproxEnd }}" style="flex:1;display:flex;flex-direction:column;gap:6px;text-align:left;padding:13px;border-radius:14px;border:1px solid {{ approxEndBorder }};background:rgba(244,235,216,.03);cursor:pointer">
+                    <span style="font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;opacity:.5">Hasta (aprox.)</span>
+                    <span style="font-size:.9rem;color:#f4ebd8">{{ approxEndLabel }}</span>
+                  </button>
+                  <button onClick="{{ clearApproxEnd }}" aria-label="Quitar mes de regreso" style="width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1px solid rgba(244,235,216,.16);background:none;color:#f4ebd8;font-size:1rem;cursor:pointer" style-hover="border-color:rgba(212,180,131,.6)">×</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noApproxEnd }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ openApproxEnd }}" style="align-self:flex-start;padding:8px 14px;border-radius:999px;border:1px dashed rgba(212,180,131,.4);background:none;color:#d4b483;font-size:.78rem;cursor:pointer">+ Añadir mes de regreso aproximado</button>
+              </sc-if>
+            </div>
           </sc-if>
         </div>
       </div>
@@ -501,6 +515,55 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   </div>
   </sc-if>
 
+  <sc-if value="{{ showCalendar }}" hint-placeholder-val="{{ false }}">
+  <div class="bj-how-overlay" onClick="{{ closeCalendar }}" style="position:fixed;inset:0;z-index:220;display:flex;align-items:center;justify-content:center;background:rgba(5,11,20,.74);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);animation:bj-how-fade .3s ease both">
+    <div onClick="{{ stopProp }}" style="width:100%;max-width:{{ calMaxWidth }};background:#0b1626;border:1px solid rgba(212,180,131,.24);border-radius:24px;padding:18px clamp(14px,4vw,26px) 24px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 32px);overflow-y:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <button onClick="{{ calPrev }}" aria-label="Mes anterior" style="width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1px solid rgba(244,235,216,.16);background:none;color:#f4ebd8;font-size:1rem;cursor:pointer" style-hover="border-color:rgba(212,180,131,.6)">‹</button>
+        <span style="font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">{{ calSelectingLabel }}</span>
+        <button onClick="{{ calNext }}" aria-label="Mes siguiente" style="width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1px solid rgba(244,235,216,.16);background:none;color:#f4ebd8;font-size:1rem;cursor:pointer" style-hover="border-color:rgba(212,180,131,.6)">›</button>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+        <sc-for list="{{ calMonths }}" as="cm" hint-placeholder-count="1">
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:240px;flex:1">
+            <span style="text-align:center;font-family:var(--serif);font-size:1.1rem">{{ cm.label }}</span>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+              <sc-for list="{{ weekdayLabels }}" as="wd" hint-placeholder-count="7">
+                <span style="text-align:center;font-size:.62rem;opacity:.4;padding:4px 0">{{ wd.label }}</span>
+              </sc-for>
+            </div>
+            <sc-for list="{{ cm.weeks }}" as="week" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+                <sc-for list="{{ week }}" as="day" hint-placeholder-count="7">
+                  <button onClick="{{ day.select }}" disabled="{{ day.disabled }}" style="aspect-ratio:1;min-height:38px;border-radius:50%;border:{{ day.ring }};background:{{ day.bg }};color:{{ day.color }};font-weight:{{ day.weight }};font-size:.85rem;cursor:{{ day.cursor }}">{{ day.label }}</button>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ showMonthPicker }}" hint-placeholder-val="{{ false }}">
+  <div class="bj-how-overlay" onClick="{{ closeMonthPicker }}" style="position:fixed;inset:0;z-index:220;display:flex;align-items:center;justify-content:center;background:rgba(5,11,20,.74);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);animation:bj-how-fade .3s ease both">
+    <div onClick="{{ stopProp }}" style="width:100%;max-width:420px;background:#0b1626;border:1px solid rgba(212,180,131,.24);border-radius:24px;padding:20px clamp(14px,4vw,26px) 24px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 32px);overflow-y:auto">
+      <span style="text-align:center;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#d4b483">{{ monthPickerLabel }}</span>
+      <sc-for list="{{ monthYears }}" as="yg" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-family:var(--serif);font-size:1.05rem;opacity:.75">{{ yg.year }}</span>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+            <sc-for list="{{ yg.months }}" as="mo" hint-placeholder-count="12">
+              <button onClick="{{ mo.select }}" disabled="{{ mo.disabled }}" style="padding:14px 4px;border-radius:14px;border:1px solid {{ mo.border }};background:{{ mo.bg }};color:{{ mo.color }};font-weight:{{ mo.weight }};font-size:.8rem;letter-spacing:.04em;cursor:{{ mo.cursor }}">{{ mo.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Intro&quot;,&quot;El mundo&quot;,&quot;Un viaje&quot;,&quot;Brief&quot;,&quot;WhatsApp&quot;],&quot;default&quot;:&quot;Intro&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Vista&quot;},&quot;globeZoom&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.6,&quot;max&quot;:1.2,&quot;step&quot;:0.02,&quot;default&quot;:0.82,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;El mundo&quot;},&quot;autoRotate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;El mundo&quot;}}">
@@ -570,8 +633,7 @@ const STEPS = ['destino','party','dates','vibe','budget','style','closing'];
 const PINS_JSON = JSON.stringify(D.map((d, i) => ({ i, lat: d.lat, lng: d.lng, title: d.title })));
 
 // Lugares visitados por Esteban — segunda capa del globo, discreta, sin thumbnail
-// ni CTA. Para países completos se usa una coordenada representativa; Palestina
-// e Israel usan cada uno un punto geográfico neutral (no una capital en disputa).
+// ni CTA. Para países completos se usa una coordenada representativa.
 const VISITED = [
   { name:'Bocas del Toro', country:'Panamá', type:'Islas', lat:9.34, lng:-82.25, emoji:'🏝️' },
   { name:'Cancún', country:'México', type:'Ciudad', lat:21.16, lng:-86.85, emoji:'🏖️' },
@@ -593,8 +655,6 @@ const VISITED = [
   { name:'Grand Teton National Park', country:'Estados Unidos', type:'Parque nacional', lat:43.79, lng:-110.68, emoji:'🦌' },
   { name:'Egipto', country:'Egipto', type:'País', lat:30.04, lng:31.24, flag:'eg' },
   { name:'Jordania', country:'Jordania', type:'País', lat:31.95, lng:35.93, flag:'jo' },
-  { name:'Palestina', country:'Palestina', type:'Territorio', lat:31.90, lng:35.20, flag:'ps' },
-  { name:'Israel', country:'Israel', type:'País', lat:32.09, lng:34.78, flag:'il' },
   { name:'Copenhague', country:'Dinamarca', type:'Ciudad', lat:55.68, lng:12.57, emoji:'🧜‍♀️' },
   { name:'Helsingborg', country:'Suecia', type:'Ciudad', lat:56.05, lng:12.69, emoji:'🏰' },
   { name:'Chennai', country:'India', type:'Ciudad', lat:13.08, lng:80.27, emoji:'🛕' },
@@ -624,14 +684,26 @@ const hasOnboarded = () => { try { return localStorage.getItem(ONBOARD_KEY) === 
 const setOnboarded = () => { try { localStorage.setItem(ONBOARD_KEY, '1'); } catch (e) {} };
 const bucket = (v, lo, mid, hi) => (v < 34 ? lo : v > 66 ? hi : mid);
 
+const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MONTHS_ES_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const WEEKDAYS_ES = ['L','M','X','J','V','S','D'];
+const pad2 = n => String(n).padStart(2, '0');
+const isoStr = (y, m, d) => y + '-' + pad2(m + 1) + '-' + pad2(d);
+const shiftMonth = (c, delta) => { let m = c.m + delta, y = c.y; while (m < 0) { m += 12; y--; } while (m > 11) { m -= 12; y++; } return { y, m }; };
+const monthLabel = (y, m) => MONTHS_ES[m][0].toUpperCase() + MONTHS_ES[m].slice(1) + ' ' + y;
+const formatDateEs = iso => { const p = iso.split('-').map(Number); return p[2] + ' ' + MONTHS_ES_SHORT[p[1] - 1] + ' ' + p[0]; };
+const formatMonthEs = ym => { const p = ym.split('-').map(Number); return MONTHS_ES[p[1] - 1][0].toUpperCase() + MONTHS_ES[p[1] - 1].slice(1) + ' ' + p[0]; };
+
 class Component extends DCLogic {
   state = {
     screen: null, obStep: 0, sel: null, active: 0, visited: [], briefStep: 0, showVisited: false, focusedVisited: null, showHow: false,
+    showCalendar: false, calSelecting: 'start', calCursor: null,
+    showMonthPicker: false, monthSelecting: 'start',
     desk: typeof window !== 'undefined' && window.innerWidth >= 820,
     tall: typeof window !== 'undefined' && window.innerHeight >= 700,
     brief: {
       destination: '', destinationUnknown: false, travelParty: null,
-      dates: { mode: null, start: '', end: '', month: '' },
+      dates: { mode: null, start: '', end: '', approxStartMonth: '', approxEndMonth: '' },
       vibes: [], budget: { basis: 'per_person', range: null },
       travelStyle: { pace: 50, spendingStyle: 50, structure: 50 },
       contact: { name: '', whatsapp: '' },
@@ -776,6 +848,108 @@ class Component extends DCLogic {
     visited: s.visited.indexOf(i) < 0 ? s.visited.concat([i]) : s.visited,
   }));
 
+  todayIso() { const n = new Date(); return isoStr(n.getFullYear(), n.getMonth(), n.getDate()); }
+
+  openCalendar = which => {
+    const d = this.state.brief.dates;
+    const selecting = (which === 'end' && d.start) ? 'end' : 'start';
+    const ref = (selecting === 'end' ? (d.end || d.start) : d.start) || this.todayIso();
+    const [y, m] = ref.split('-').map(Number);
+    this.setState({ showCalendar: true, calSelecting: selecting, calCursor: { y, m: m - 1 } });
+  };
+  closeCalendar = () => this.setState({ showCalendar: false });
+  calPrev = () => this.setState(s => ({ calCursor: shiftMonth(s.calCursor, -1) }));
+  calNext = () => this.setState(s => ({ calCursor: shiftMonth(s.calCursor, 1) }));
+
+  selectCalDay = iso => {
+    const d = this.state.brief.dates;
+    if (this.state.calSelecting === 'start') {
+      const keepEnd = (d.end && d.end >= iso) ? d.end : '';
+      this.patch({ dates: Object.assign({}, d, { start: iso, end: keepEnd }) });
+      if (keepEnd) this.setState({ showCalendar: false });
+      else this.setState({ calSelecting: 'end' });
+    } else if (d.start && iso < d.start) {
+      this.patch({ dates: Object.assign({}, d, { start: iso, end: '' }) });
+    } else {
+      this.patch({ dates: Object.assign({}, d, { end: iso }) });
+      this.setState({ showCalendar: false });
+    }
+  };
+
+  buildMonthView(y, m) {
+    const d = this.state.brief.dates, today = this.todayIso();
+    const startWeekday = (new Date(y, m, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < startWeekday; i++) cells.push(null);
+    for (let dd = 1; dd <= daysInMonth; dd++) cells.push(dd);
+    while (cells.length % 7 !== 0) cells.push(null);
+    const weeks = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      weeks.push(cells.slice(i, i + 7).map((dd, wi) => {
+        if (dd === null) return { key: y + '-' + m + '-b' + i + '-' + wi, label: '', disabled: true, bg: 'transparent', color: 'transparent', weight: '400', ring: '1px solid transparent', cursor: 'default', select: () => {} };
+        const iso = isoStr(y, m, dd);
+        const isEdge = iso === d.start || iso === d.end;
+        const inRange = Boolean(d.start && d.end && iso > d.start && iso < d.end);
+        const isToday = iso === today;
+        const disabled = iso < today;
+        return {
+          key: iso, label: String(dd), disabled,
+          bg: isEdge ? SAND : inRange ? 'rgba(212,180,131,.18)' : 'transparent',
+          color: disabled ? 'rgba(244,235,216,.25)' : isEdge ? '#0b1220' : '#f4ebd8',
+          weight: isEdge ? '600' : '400',
+          ring: (isToday && !isEdge) ? '1px solid rgba(212,180,131,.6)' : '1px solid transparent',
+          cursor: disabled ? 'default' : 'pointer',
+          select: disabled ? () => {} : () => this.selectCalDay(iso),
+        };
+      }));
+    }
+    return { label: monthLabel(y, m), weeks };
+  }
+
+  openApproxStart = () => this.setState({ showMonthPicker: true, monthSelecting: 'start' });
+  openApproxEnd = () => this.setState({ showMonthPicker: true, monthSelecting: 'end' });
+  closeMonthPicker = () => this.setState({ showMonthPicker: false });
+  clearApproxEnd = () => this.patch({ dates: Object.assign({}, this.state.brief.dates, { approxEndMonth: '' }) });
+
+  selectApproxMonth = ym => {
+    const d = this.state.brief.dates;
+    if (this.state.monthSelecting === 'start') {
+      const keepEnd = (d.approxEndMonth && d.approxEndMonth >= ym) ? d.approxEndMonth : '';
+      this.patch({ dates: Object.assign({}, d, { approxStartMonth: ym, approxEndMonth: keepEnd }) });
+    } else {
+      this.patch({ dates: Object.assign({}, d, { approxEndMonth: ym }) });
+    }
+    this.setState({ showMonthPicker: false });
+  };
+
+  buildApproxMonths() {
+    const st = this.state, d = st.brief.dates;
+    const now = new Date();
+    const startY = now.getFullYear(), startM = now.getMonth(), endY = startY + 1;
+    const groups = [];
+    for (let y = startY; y <= endY; y++) {
+      const months = [];
+      for (let m = (y === startY ? startM : 0); m <= 11; m++) {
+        const ym = y + '-' + pad2(m + 1);
+        const isEdge = ym === d.approxStartMonth || ym === d.approxEndMonth;
+        const inRange = Boolean(d.approxStartMonth && d.approxEndMonth && ym > d.approxStartMonth && ym < d.approxEndMonth);
+        const disabled = st.monthSelecting === 'end' && Boolean(d.approxStartMonth) && ym < d.approxStartMonth;
+        months.push({
+          key: ym, label: MONTHS_ES_SHORT[m].toUpperCase(), disabled,
+          bg: isEdge ? SAND : inRange ? 'rgba(212,180,131,.18)' : 'transparent',
+          color: disabled ? 'rgba(244,235,216,.25)' : isEdge ? '#0b1220' : '#f4ebd8',
+          weight: isEdge ? '600' : '400',
+          border: isEdge ? SAND : 'rgba(244,235,216,.14)',
+          cursor: disabled ? 'default' : 'pointer',
+          select: disabled ? () => {} : () => this.selectApproxMonth(ym),
+        });
+      }
+      groups.push({ year: y, months });
+    }
+    return groups;
+  }
+
   valid(key) {
     const b = this.state.brief;
     if (key === 'destino') return b.destinationUnknown || b.destination.trim().length > 0;
@@ -783,7 +957,7 @@ class Component extends DCLogic {
     if (key === 'dates') {
       const d = b.dates;
       if (d.mode === 'exact') return Boolean(d.start && d.end);
-      if (d.mode === 'approximate') return Boolean(d.month);
+      if (d.mode === 'approximate') return Boolean(d.approxStartMonth);
       return d.mode === 'unknown';
     }
     if (key === 'vibe') return b.vibes.length >= 1;
@@ -796,7 +970,10 @@ class Component extends DCLogic {
     const d = this.state.brief.dates;
     const fmt = (iso, opts) => { try { return new Date(iso + 'T00:00:00').toLocaleDateString('es', opts); } catch (e) { return iso; } };
     if (d.mode === 'exact' && d.start && d.end) return fmt(d.start, { day:'numeric', month:'long', year:'numeric' }) + ' – ' + fmt(d.end, { day:'numeric', month:'long', year:'numeric' });
-    if (d.mode === 'approximate' && d.month) return fmt(d.month + '-01', { month:'long', year:'numeric' });
+    if (d.mode === 'approximate' && d.approxStartMonth) {
+      const start = formatMonthEs(d.approxStartMonth);
+      return (d.approxEndMonth && d.approxEndMonth !== d.approxStartMonth) ? start + ' – ' + formatMonthEs(d.approxEndMonth) : start;
+    }
     return 'Fechas flexibles';
   }
 
@@ -977,9 +1154,45 @@ class Component extends DCLogic {
       })),
       showExactDates: b.dates.mode === 'exact',
       showMonth: b.dates.mode === 'approximate',
-      setStart: e => this.patch({ dates: Object.assign({}, b.dates, { start: e.target.value }) }),
-      setEnd: e => this.patch({ dates: Object.assign({}, b.dates, { end: e.target.value }) }),
-      setMonth: e => this.patch({ dates: Object.assign({}, b.dates, { month: e.target.value }) }),
+
+      approxStartLabel: b.dates.approxStartMonth ? formatMonthEs(b.dates.approxStartMonth) : 'Elegir mes',
+      approxStartColor: b.dates.approxStartMonth ? '#f4ebd8' : 'rgba(244,235,216,.4)',
+      approxStartBorder: sel(Boolean(b.dates.approxStartMonth)),
+      approxEndLabel: b.dates.approxEndMonth ? formatMonthEs(b.dates.approxEndMonth) : 'Elegir mes',
+      approxEndBorder: sel(Boolean(b.dates.approxEndMonth)),
+      hasApproxStart: Boolean(b.dates.approxStartMonth),
+      hasApproxEnd: Boolean(b.dates.approxEndMonth),
+      noApproxEnd: Boolean(b.dates.approxStartMonth) && !b.dates.approxEndMonth,
+      openApproxStart: this.openApproxStart,
+      openApproxEnd: this.openApproxEnd,
+      clearApproxEnd: this.clearApproxEnd,
+
+      showMonthPicker: st.showMonthPicker,
+      closeMonthPicker: this.closeMonthPicker,
+      monthPickerLabel: st.monthSelecting === 'start' ? 'Elige el mes aproximado de salida' : 'Elige el mes aproximado de regreso',
+      monthYears: this.buildApproxMonths(),
+
+      dateStartLabel: b.dates.start ? formatDateEs(b.dates.start) : 'Elegir fecha',
+      dateEndLabel: b.dates.end ? formatDateEs(b.dates.end) : 'Elegir fecha',
+      startFieldBorder: sel(Boolean(b.dates.start)),
+      endFieldBorder: sel(Boolean(b.dates.end)),
+      startFieldColor: b.dates.start ? '#f4ebd8' : 'rgba(244,235,216,.4)',
+      endFieldColor: b.dates.end ? '#f4ebd8' : 'rgba(244,235,216,.4)',
+      openStartCal: () => this.openCalendar('start'),
+      openEndCal: () => this.openCalendar('end'),
+
+      showCalendar: st.showCalendar,
+      closeCalendar: this.closeCalendar,
+      calPrev: this.calPrev,
+      calNext: this.calNext,
+      calMaxWidth: st.desk ? '680px' : '380px',
+      calSelectingLabel: st.calSelecting === 'start' ? 'Elige tu salida' : 'Elige tu regreso',
+      calMonths: (() => {
+        const c0 = st.calCursor || (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })();
+        const months = st.desk ? [c0, shiftMonth(c0, 1)] : [c0];
+        return months.map(c => this.buildMonthView(c.y, c.m));
+      })(),
+      weekdayLabels: WEEKDAYS_ES.map((w, i) => ({ key: i, label: w })),
 
       vibeOptions: VIBES.map(v => {
         const on = b.vibes.indexOf(v[0]) >= 0;
