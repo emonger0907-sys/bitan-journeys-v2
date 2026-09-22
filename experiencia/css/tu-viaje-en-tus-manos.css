@@ -1,0 +1,746 @@
+/* ============================================================
+   BITAN JOURNEYS — Sección "Tu viaje, en tus manos"
+   Todo va namespaced bajo .bj-viaje para no chocar con tu CSS.
+   Fuentes: Cormorant Garamond + Plus Jakarta Sans.
+   Si tu sitio ya las carga, no necesitas volver a incluirlas.
+   ============================================================ */
+
+.bj-viaje {
+  /* --- Paleta de marca --- */
+  --bj-midnight: #070B14;
+  --bj-ivory: #F4EBD8;
+  --bj-champagne: #C5A46D;
+  --bj-ocean: #2D6E8A;
+  --bj-sage: #7C8C78;
+
+  /* Derivados (no inventes nuevos: usa estos) */
+  --bj-ivory-82: rgba(244, 235, 216, .82);
+  --bj-ivory-70: rgba(244, 235, 216, .70);
+  --bj-ivory-62: rgba(244, 235, 216, .62);
+  --bj-ivory-55: rgba(244, 235, 216, .55);
+  --bj-ivory-44: rgba(244, 235, 216, .44);
+  --bj-ivory-34: rgba(244, 235, 216, .34);
+  --bj-line: rgba(244, 235, 216, .12);
+  --bj-card: rgba(244, 235, 216, .045);
+  --bj-card-line: rgba(244, 235, 216, .08);
+  --bj-sage-soft: rgba(124, 140, 120, .18);
+  --bj-sage-text: #A9BBA4;
+  --bj-ocean-soft: rgba(45, 110, 138, .14);
+  --bj-ocean-line: rgba(45, 110, 138, .30);
+  --bj-ocean-text: #7FB3CC;
+  --bj-champ-soft: rgba(197, 164, 109, .08);
+  --bj-champ-line: rgba(197, 164, 109, .28);
+
+  --bj-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --bj-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --bj-gutter: clamp(1.5rem, 5vw, 7.5rem);
+  --bj-max: 1440px;
+  --bj-ease: cubic-bezier(.22, .61, .36, 1);
+
+  position: relative;
+  background: var(--bj-midnight);
+  color: var(--bj-ivory);
+  font-family: var(--bj-sans);
+  overflow-x: clip;
+  padding-block: clamp(3.5rem, 8vw, 7rem) clamp(4rem, 9vw, 8rem);
+  -webkit-font-smoothing: antialiased;
+}
+
+.bj-viaje *,
+.bj-viaje *::before,
+.bj-viaje *::after { box-sizing: border-box; }
+
+.bj-wrap {
+  max-width: var(--bj-max);
+  margin-inline: auto;
+  padding-inline: var(--bj-gutter);
+}
+
+/* ---------- Animación de entrada ---------- */
+.bj-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .9s var(--bj-ease), transform .9s var(--bj-ease);
+  transition-delay: var(--bj-delay, 0s);
+  will-change: opacity, transform;
+}
+.bj-reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bj-reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Tipografía base ---------- */
+.bj-eyebrow {
+  margin: 0;
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--bj-champagne);
+}
+
+.bj-copy {
+  margin: 0;
+  font-size: clamp(.95rem, .55vw + .8rem, 1.0625rem);
+  line-height: 1.68;
+  color: var(--bj-ivory-62);
+  max-width: 44ch;
+}
+
+.bj-serif-quote {
+  margin: 0;
+  font-family: var(--bj-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1vw + .95rem, 1.5625rem);
+  line-height: 1.45;
+  color: var(--bj-ivory-82);
+}
+
+/* ============================================================
+   1. TRANSICIÓN DESDE EL GLOBO
+   ============================================================ */
+.bj-transicion {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+.bj-transicion__paso {
+  font-size: .5625rem;
+  font-weight: 600;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--bj-ivory-44);
+  white-space: nowrap;
+}
+.bj-transicion__linea {
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  background: rgba(244, 235, 216, .20);
+}
+.bj-transicion__linea--activa { background: rgba(197, 164, 109, .55); }
+.bj-transicion__actual {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .5625rem;
+  font-weight: 700;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--bj-champagne);
+}
+.bj-transicion__punto {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--bj-champagne);
+}
+
+@media (min-width: 900px) {
+  .bj-transicion__paso, .bj-transicion__actual { font-size: .65625rem; letter-spacing: .3em; }
+  .bj-transicion { gap: 1.125rem; }
+}
+
+/* ============================================================
+   2. DECLARACIÓN
+   ============================================================ */
+.bj-declaracion { display: grid; gap: clamp(1.25rem, 2vw, 2rem); }
+
+.bj-declaracion__negacion,
+.bj-declaracion__afirmacion {
+  margin: 0;
+  font-family: var(--bj-serif);
+  letter-spacing: -.015em;
+  text-wrap: pretty;
+}
+.bj-declaracion__negacion {
+  font-weight: 300;
+  font-size: clamp(2.25rem, 6vw, 5.5rem);
+  line-height: 1.04;
+  color: var(--bj-ivory-44);
+  max-width: 14ch;
+}
+.bj-declaracion__afirmacion {
+  font-weight: 400;
+  font-size: clamp(2.75rem, 7.5vw, 6.75rem);
+  line-height: .98;
+  color: var(--bj-ivory);
+  margin-top: -.35em;
+  max-width: 13ch;
+}
+.bj-declaracion__afirmacion em { font-style: italic; color: var(--bj-champagne); }
+
+.bj-declaracion__apoyo {
+  display: grid;
+  gap: .85rem;
+  padding-top: clamp(1rem, 2vw, 1.5rem);
+  border-top: 1px solid var(--bj-line);
+  max-width: 34rem;
+  margin-top: clamp(.5rem, 1.5vw, 1.25rem);
+}
+
+.bj-scrollhint {
+  display: inline-flex;
+  align-items: center;
+  gap: .625rem;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  font-size: .625rem;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--bj-ivory-55);
+}
+
+/* ============================================================
+   3. LOS TRES MOMENTOS
+   ============================================================ */
+.bj-momentos {
+  display: grid;
+  gap: clamp(4.5rem, 10vw, 9rem);
+  margin-top: clamp(4rem, 9vw, 8rem);
+}
+
+.bj-momento { display: grid; gap: clamp(2rem, 4vw, 3rem); }
+
+.bj-momento__marca {
+  display: flex;
+  align-items: baseline;
+  gap: .875rem;
+  margin: 0 0 clamp(1.25rem, 2vw, 1.875rem);
+}
+.bj-momento__num {
+  font-family: var(--bj-serif);
+  font-size: 1.25rem;
+  color: var(--bj-champagne);
+}
+.bj-momento__rule {
+  display: block;
+  width: 1.625rem;
+  height: 1px;
+  background: rgba(197, 164, 109, .6);
+  transform: translateY(-.375rem);
+}
+.bj-momento__etiqueta {
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--bj-champagne);
+}
+.bj-momento__titulo {
+  margin: 0 0 clamp(.875rem, 2vw, 1.25rem);
+  font-family: var(--bj-serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 4.2vw, 4.125rem);
+  line-height: 1.07;
+  letter-spacing: -.012em;
+  color: var(--bj-ivory);
+  text-wrap: pretty;
+  max-width: 16ch;
+}
+
+/* --- Layout escritorio: filas asimétricas alternadas --- */
+@media (min-width: 900px) {
+  .bj-momento {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    gap: clamp(3rem, 6vw, 7rem);
+    align-items: center;
+  }
+  .bj-momento--durante { grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); }
+  .bj-momento--durante .bj-momento__texto { order: 2; }
+  .bj-momento--durante .bj-momento__producto { order: 1; }
+  .bj-momento--cambios { grid-template-columns: minmax(0, 1fr) minmax(0, 40rem); }
+}
+
+/* ============================================================
+   4. MOCKUP DE TELÉFONO / UI DEL PRODUCTO
+   ============================================================ */
+.bj-device {
+  width: 100%;
+  max-width: 22.75rem;
+  border-radius: 2.875rem;
+  padding: .6875rem;
+  background: #151C29;
+  border: 1px solid rgba(244, 235, 216, .12);
+  box-shadow: 0 3rem 6.875rem rgba(0, 0, 0, .62);
+}
+
+.bj-screen {
+  border-radius: 2.25rem;
+  background: #080D17;
+  padding: 2.5rem 1.25rem 1.375rem;
+  display: grid;
+  gap: 1.125rem;
+  align-content: start;
+}
+
+/* En móvil el teléfono desaparece: la UI se muestra a escala real,
+   sangrada por el borde. La página se convierte en el producto. */
+@media (max-width: 899px) {
+  .bj-device {
+    max-width: none;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .bj-screen {
+    background: #0E1522;
+    border: 1px solid rgba(244, 235, 216, .11);
+    padding: 1.25rem;
+    box-shadow: 0 1.5rem 3.75rem rgba(0, 0, 0, .5);
+  }
+  .bj-bleed--right {
+    margin-right: calc(var(--bj-gutter) * -1);
+  }
+  .bj-bleed--right .bj-screen,
+  .bj-bleed--right .bj-panel {
+    border-radius: 1.25rem 0 0 1.25rem;
+    border-right: none;
+    padding-right: calc(var(--bj-gutter) + .25rem);
+  }
+  .bj-bleed--left {
+    margin-left: calc(var(--bj-gutter) * -1);
+  }
+  .bj-bleed--left .bj-screen,
+  .bj-bleed--left .bj-panel {
+    border-radius: 0 1.25rem 1.25rem 0;
+    border-left: none;
+    padding-left: calc(var(--bj-gutter) + .25rem);
+  }
+}
+
+/* --- Cabecera de la app --- */
+.bj-app__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+}
+.bj-app__kicker {
+  display: block;
+  font-size: .59375rem;
+  font-weight: 700;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--bj-champagne);
+  margin-bottom: .3125rem;
+}
+.bj-app__titulo {
+  margin: 0;
+  font-family: var(--bj-serif);
+  font-size: clamp(1.625rem, 4vw, 1.9375rem);
+  line-height: 1.08;
+  color: var(--bj-ivory);
+  font-weight: 400;
+}
+.bj-app__meta { font-size: .75rem; color: var(--bj-ivory-55); }
+
+.bj-app__label {
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--bj-ivory-55);
+}
+
+/* --- Filas de reserva --- */
+.bj-lista { display: grid; gap: .6875rem; }
+
+.bj-fila {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  padding: .875rem;
+  border-radius: .9375rem;
+  background: var(--bj-card);
+  border: 1px solid var(--bj-card-line);
+}
+.bj-fila__icono { flex-shrink: 0; margin-top: .125rem; }
+.bj-fila__cuerpo { display: grid; gap: .1875rem; flex-grow: 1; min-width: 0; }
+.bj-fila__titulo { font-size: .875rem; font-weight: 600; color: var(--bj-ivory); }
+.bj-fila__detalle { font-size: .75rem; color: var(--bj-ivory-55); }
+.bj-fila--alerta {
+  background: var(--bj-champ-soft);
+  border-color: var(--bj-champ-line);
+}
+.bj-fila--alerta .bj-fila__detalle { color: var(--bj-champagne); }
+.bj-fila--pendiente {
+  background: rgba(244, 235, 216, .03);
+  border-style: dashed;
+  border-color: rgba(244, 235, 216, .16);
+}
+.bj-fila--pendiente .bj-fila__titulo { color: var(--bj-ivory-70); }
+
+.bj-badge {
+  flex-shrink: 0;
+  font-size: .5625rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--bj-sage-text);
+  background: var(--bj-sage-soft);
+  padding: .25rem .5rem;
+  border-radius: 1.25rem;
+  white-space: nowrap;
+}
+
+/* --- Presupuesto --- */
+.bj-presupuesto {
+  display: grid;
+  gap: .6875rem;
+  padding: .9375rem;
+  border-radius: .875rem;
+  background: var(--bj-card);
+  border: 1px solid var(--bj-card-line);
+}
+.bj-presupuesto__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.bj-presupuesto__monto { font-size: .75rem; color: var(--bj-ivory-62); }
+.bj-barra {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(244, 235, 216, .10);
+}
+.bj-barra__reservado { width: 46%; background: var(--bj-champagne); }
+.bj-barra__pendiente { width: 22%; background: rgba(124, 140, 120, .75); }
+.bj-leyenda { display: flex; gap: 1.125rem; flex-wrap: wrap; }
+.bj-leyenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  font-size: .71875rem;
+  color: var(--bj-ivory-62);
+}
+.bj-punto { width: 7px; height: 7px; border-radius: 2px; }
+.bj-punto--champ { background: var(--bj-champagne); }
+.bj-punto--sage { background: rgba(124, 140, 120, .75); }
+
+/* --- Timeline del día --- */
+.bj-timeline { display: grid; }
+.bj-parada { display: flex; gap: .875rem; align-items: flex-start; }
+.bj-parada__riel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 8px;
+  flex-shrink: 0;
+  padding-top: .375rem;
+}
+.bj-parada__dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 235, 216, .35);
+}
+.bj-parada--activa .bj-parada__dot { background: var(--bj-champagne); border-color: var(--bj-champagne); }
+.bj-parada__linea {
+  width: 1px;
+  flex-grow: 1;
+  min-height: 2.5rem;
+  background: rgba(244, 235, 216, .16);
+}
+.bj-parada__cuerpo { display: grid; gap: .1875rem; padding-bottom: 1.125rem; flex-grow: 1; min-width: 0; }
+.bj-parada:last-child .bj-parada__cuerpo { padding-bottom: 0; }
+.bj-parada__hora {
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--bj-ivory-62);
+}
+.bj-parada--activa .bj-parada__hora { color: var(--bj-champagne); }
+.bj-parada__titulo { font-size: .9375rem; font-weight: 600; color: var(--bj-ivory); }
+.bj-parada__detalle { font-size: .78125rem; color: var(--bj-ivory-55); }
+.bj-parada__firma {
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--bj-champagne);
+}
+
+.bj-acciones { display: flex; gap: .625rem; margin-top: .5rem; }
+.bj-accion {
+  flex: 1 1 0;
+  text-align: center;
+  padding: .8125rem .625rem;
+  border-radius: .6875rem;
+  border: 1px solid rgba(244, 235, 216, .22);
+  font-size: .78125rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--bj-ivory);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .25s var(--bj-ease), background-color .25s var(--bj-ease);
+}
+.bj-accion:hover,
+.bj-accion:focus-visible { border-color: var(--bj-champagne); background: rgba(197, 164, 109, .08); }
+
+.bj-aviso {
+  display: flex;
+  gap: .6875rem;
+  align-items: center;
+  padding: .8125rem .875rem;
+  border-radius: .8125rem;
+  background: var(--bj-ocean-soft);
+  border: 1px solid var(--bj-ocean-line);
+  font-size: .78125rem;
+  line-height: 1.4;
+  color: var(--bj-ivory-70);
+}
+.bj-aviso svg { flex-shrink: 0; }
+
+/* ============================================================
+   5. PANEL DE RUTA (momento 03)
+   ============================================================ */
+.bj-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.375rem;
+  border-radius: 1.375rem;
+  background: #0D1422;
+  border: 1px solid rgba(244, 235, 216, .11);
+  box-shadow: 0 2.875rem 6.25rem rgba(0, 0, 0, .6);
+}
+.bj-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.bj-panel__mapa { display: block; width: 100%; height: auto; border-radius: .875rem; background: #0A1019; }
+
+.bj-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: .4375rem;
+  font-size: .59375rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--bj-sage-text);
+  background: rgba(124, 140, 120, .16);
+  padding: .4375rem .6875rem;
+  border-radius: 1.25rem;
+  white-space: nowrap;
+}
+.bj-offline::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--bj-sage);
+}
+
+.bj-dias { display: flex; gap: .375rem; }
+.bj-dia {
+  flex: 1 1 0;
+  text-align: center;
+  font-size: .65625rem;
+  font-weight: 600;
+  color: var(--bj-ivory-44);
+  padding: .5625rem 0;
+  border-radius: .5rem;
+  border: 1px solid rgba(244, 235, 216, .10);
+}
+.bj-dia--futuro { color: var(--bj-ivory-62); border-color: rgba(244, 235, 216, .18); }
+.bj-dia--hoy {
+  flex-grow: 2.4;
+  color: var(--bj-midnight);
+  background: var(--bj-champagne);
+  border-color: var(--bj-champagne);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Fichas del "modo viejo" */
+.bj-descartes { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+.bj-descartes li {
+  list-style: none;
+  font-size: .71875rem;
+  color: var(--bj-ivory-34);
+  border: 1px dashed rgba(244, 235, 216, .16);
+  border-radius: .5rem;
+  padding: .4375rem .6875rem;
+  text-decoration: line-through;
+  text-decoration-color: rgba(244, 235, 216, .28);
+}
+
+.bj-offline-nota {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  margin-top: 1.25rem;
+  font-size: .78125rem;
+  font-weight: 500;
+  color: var(--bj-ivory-62);
+}
+
+/* ============================================================
+   6. REVEAL FINAL + CTA
+   ============================================================ */
+.bj-final { margin-top: clamp(5rem, 11vw, 10rem); }
+
+.bj-final__grid { display: grid; gap: clamp(2.5rem, 5vw, 4rem); align-items: center; }
+
+@media (min-width: 900px) {
+  .bj-final__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 30rem); gap: clamp(3rem, 6vw, 6rem); }
+}
+
+.bj-payoff { margin: 0; }
+.bj-payoff__linea {
+  display: block;
+  font-family: var(--bj-serif);
+  font-size: clamp(1.875rem, 4.4vw, 4rem);
+  line-height: 1.12;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+}
+.bj-payoff__linea--fuerte { font-weight: 400; color: var(--bj-ivory); }
+.bj-payoff__linea--suave { font-weight: 300; color: rgba(244, 235, 216, .52); }
+
+.bj-cta-bloque {
+  display: grid;
+  justify-items: start;
+  gap: 1.375rem;
+  margin-top: clamp(2.25rem, 4vw, 3rem);
+  padding-top: clamp(1.75rem, 3vw, 2rem);
+  border-top: 1px solid rgba(244, 235, 216, .14);
+}
+
+.bj-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .875rem;
+  padding: 1.1875rem 2rem;
+  min-height: 56px;
+  border-radius: .75rem;
+  background: var(--bj-champagne);
+  color: var(--bj-midnight);
+  font-size: clamp(.9375rem, .4vw + .85rem, 1rem);
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-decoration: none;
+  transition: transform .3s var(--bj-ease), background-color .3s var(--bj-ease);
+}
+.bj-cta:hover,
+.bj-cta:focus-visible { background: #D9BC88; }
+.bj-cta:hover { transform: translateY(-2px); }
+.bj-cta svg { flex-shrink: 0; }
+
+.bj-cta-micro {
+  margin: 0;
+  font-size: .8125rem;
+  line-height: 1.6;
+  color: rgba(244, 235, 216, .60);
+  max-width: 40ch;
+}
+
+.bj-cta-premium { display: flex; flex-direction: column; gap: .375rem; }
+.bj-cta-premium .bj-eyebrow { font-size: .625rem; }
+
+@media (max-width: 899px) {
+  .bj-cta-bloque { justify-items: stretch; }
+  .bj-cta { width: 100%; }
+  .bj-cta-micro { text-align: center; }
+  .bj-cta-premium { text-align: center; }
+}
+
+/* --- Banner de la app personalizada (Bitan + producto) --- */
+.bj-final__banner { margin-top: clamp(2rem, 4vw, 3rem); }
+.bj-final__banner img {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  height: auto;
+  border-radius: .875rem;
+}
+
+@media (max-width: 899px) {
+  .bj-final__banner img { max-width: none; }
+}
+
+/* --- Capa de escritorio detrás del teléfono (solo ≥1200px) --- */
+.bj-final__producto { position: relative; display: flex; justify-content: center; }
+.bj-browser { display: none; }
+
+/* En móvil la UI ya se mostró tres veces: el cierre es tipografía,
+   Bitan y CTA. Menos scroll, más fuerza. */
+@media (max-width: 899px) {
+  .bj-final__producto { display: none; }
+}
+
+@media (min-width: 1200px) {
+  .bj-final__producto { justify-content: flex-start; padding-block: 2rem 0; }
+  .bj-browser {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 5rem;
+    width: 25rem;
+    border-radius: .875rem;
+    background: #0C1320;
+    border: 1px solid rgba(244, 235, 216, .09);
+    overflow: hidden;
+    box-shadow: 0 2.5rem 5.625rem rgba(0, 0, 0, .5);
+  }
+  .bj-browser__bar {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .6875rem .875rem;
+    border-bottom: 1px solid rgba(244, 235, 216, .07);
+  }
+  .bj-browser__dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(244, 235, 216, .16); }
+  .bj-browser__url {
+    margin-left: .625rem;
+    font-size: .65625rem;
+    color: rgba(244, 235, 216, .42);
+    background: rgba(244, 235, 216, .05);
+    padding: .25rem .75rem;
+    border-radius: 1.25rem;
+  }
+  .bj-browser__body { padding: 1.125rem 1.25rem; display: grid; gap: .875rem; }
+  .bj-browser__mapa { display: block; width: 100%; height: auto; border-radius: .625rem; background: #0A1019; }
+  .bj-browser__nota {
+    margin: 0;
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--bj-ivory-44);
+    text-align: right;
+  }
+
+  .bj-final__producto .bj-device {
+    position: relative;
+    z-index: 2;
+    margin-top: 6rem;
+    max-width: 19.5rem;
+  }
+}
+
+/* ---------- Accesibilidad ---------- */
+.bj-viaje :focus-visible {
+  outline: 2px solid var(--bj-champagne);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.bj-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

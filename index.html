@@ -130,6 +130,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
             <button onClick="{{ toggleVisited }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.68rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">{{ mapToggleLabel }}</button>
             <button onClick="{{ openHow }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.68rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">¿Cómo funciona? →</button>
           </div>
+          <a href="experiencia/" aria-label="Conoce la experiencia: no viajas con un PDF, viajas con tu app. Toda tu ruta, reservas y recomendaciones en un solo lugar, diseñada para ti." style="display:block;width:100%;max-width:420px;transition:transform .3s ease" style-hover="transform:translateY(-2px)">
+            <img src="assets/brand/bitan-app-cta.png" alt="" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:1942/809;object-fit:cover">
+          </a>
           <sc-if value="{{ showVisited }}" hint-placeholder-val="{{ false }}">
           <div style="width:100%;max-width:420px;max-height:180px;overflow-y:auto;border:1px solid rgba(212,180,131,.16);border-radius:16px;background:rgba(5,11,20,.55)">
             <sc-for list="{{ visitedList }}" as="p" hint-placeholder-count="0">
@@ -191,6 +194,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           <button onClick="{{ toggleVisited }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.7rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">{{ mapToggleLabel }}</button>
           <button onClick="{{ openHow }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.7rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">¿Cómo funciona? →</button>
         </div>
+        <sc-if value="{{ roomy }}" hint-placeholder-val="{{ true }}">
+        <a href="experiencia/" aria-label="Conoce la experiencia: no viajas con un PDF, viajas con tu app. Toda tu ruta, reservas y recomendaciones en un solo lugar, diseñada para ti." style="display:block;width:100%;max-width:400px;margin-top:2px;transition:transform .3s ease" style-hover="transform:translateY(-2px)">
+          <img src="assets/brand/bitan-app-cta.png" alt="" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:1942/809;object-fit:cover">
+        </a>
+        </sc-if>
         <sc-if value="{{ showVisited }}" hint-placeholder-val="{{ false }}">
         <div style="width:100%;max-width:340px;max-height:200px;overflow-y:auto;border:1px solid rgba(212,180,131,.16);border-radius:16px;background:rgba(5,11,20,.55)">
           <sc-for list="{{ visitedList }}" as="p" hint-placeholder-count="0">
@@ -694,9 +702,20 @@ const monthLabel = (y, m) => MONTHS_ES[m][0].toUpperCase() + MONTHS_ES[m].slice(
 const formatDateEs = iso => { const p = iso.split('-').map(Number); return p[2] + ' ' + MONTHS_ES_SHORT[p[1] - 1] + ' ' + p[0]; };
 const formatMonthEs = ym => { const p = ym.split('-').map(Number); return MONTHS_ES[p[1] - 1][0].toUpperCase() + MONTHS_ES[p[1] - 1].slice(1) + ' ' + p[0]; };
 
+// Entrada directa desde /experiencia/: sus CTAs navegan a index.html#brief=1 para reusar el
+// mismo mecanismo de estado que ya abre el brief desde "Diseñar mi viaje" (screen:'brief',
+// briefStep:0). Se detecta por fragmento (#) y no solo por query string (?) porque algunos
+// servidores estáticos locales redirigen /index.html -> /index y descartan el query string;
+// el fragmento lo preserva el navegador del lado del cliente a través de esa redirección.
+const startInBrief = typeof window !== 'undefined' && (
+  /(?:^|[?&])brief=1(?:&|$)/.test(window.location.search) ||
+  /^#brief=1$/.test(window.location.hash)
+);
+if (startInBrief) setOnboarded();
+
 class Component extends DCLogic {
   state = {
-    screen: null, obStep: 0, sel: null, active: 0, visited: [], briefStep: 0, showVisited: false, focusedVisited: null, showHow: false,
+    screen: startInBrief ? 'brief' : null, obStep: 0, sel: null, active: 0, visited: [], briefStep: 0, showVisited: false, focusedVisited: null, showHow: false,
     showCalendar: false, calSelecting: 'start', calCursor: null,
     showMonthPicker: false, monthSelecting: 'start',
     desk: typeof window !== 'undefined' && window.innerWidth >= 820,
@@ -738,6 +757,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    if (startInBrief && window.history.replaceState) window.history.replaceState(null, '', window.location.pathname);
     this.mq = window.matchMedia('(min-width: 820px)');
     this.mqH = window.matchMedia('(min-height: 700px)');
     this.onMq = () => this.setState({ desk: this.mq.matches, tall: this.mqH.matches });

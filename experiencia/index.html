@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu viaje, en tus manos — Bitan Journeys</title>
+<meta name="description" content="No te entrego un itinerario. Te entrego tu viaje: una experiencia digital personalizada, incluida en los viajes diseñados con Bitan.">
+<meta name="theme-color" content="#070B14">
+<link rel="icon" href="../assets/brand/bitan-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tu-viaje-en-tus-manos.css">
+<style>
+  :root{ color-scheme: dark; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:#070B14; color:#F4EBD8;
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+
+  /* Minimal brand header — consistent with the main site, restrained on purpose */
+  .bj-exp-header{
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:calc(env(safe-area-inset-top,0px) + 14px) clamp(16px,4vw,44px) 14px;
+    background:linear-gradient(to bottom, rgba(7,11,20,.88) 60%, rgba(7,11,20,0));
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    border-bottom:1px solid transparent;
+    transition:background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .bj-exp-header.is-scrolled{
+    background:rgba(7,11,20,.86);
+    border-bottom-color:rgba(244,235,216,.08);
+    box-shadow:0 12px 28px -20px rgba(0,0,0,.65);
+  }
+  .bj-exp-brand{
+    display:flex; align-items:center; gap:10px; text-decoration:none; color:#F4EBD8; flex-shrink:0;
+  }
+  .bj-exp-brand img{ width:34px; height:34px; border-radius:9px; object-fit:contain; flex-shrink:0; }
+  .bj-exp-brand span{
+    display:flex; flex-direction:column; line-height:1.15; text-align:left;
+  }
+  .bj-exp-brand b{ font-family:'Cormorant Garamond',Georgia,serif; font-size:.92rem; font-weight:500; letter-spacing:.14em; }
+  .bj-exp-brand em{ font-style:normal; font-size:.46rem; letter-spacing:.2em; color:#C5A46D; }
+
+  .bj-exp-nav{ display:flex; align-items:center; gap:10px; }
+
+  .bj-exp-back{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:8px 15px; border:1px solid rgba(244,235,216,.16); border-radius:999px;
+    background:rgba(7,11,20,.5); color:rgba(244,235,216,.75);
+    font-size:.72rem; letter-spacing:.02em; text-decoration:none; white-space:nowrap;
+    transition:border-color .25s ease, color .25s ease;
+  }
+  .bj-exp-back:hover{ border-color:rgba(197,164,109,.7); color:#F4EBD8; }
+  .bj-exp-back__icon{ display:none; }
+
+  .bj-exp-cta{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:9px 16px; border-radius:999px;
+    border:1px solid rgba(212,180,131,.5);
+    background:rgba(7,11,20,.55); color:#F4EBD8;
+    font-size:.76rem; font-weight:500; letter-spacing:.02em;
+    text-decoration:none; white-space:nowrap;
+    box-shadow:0 6px 18px -6px rgba(197,164,109,.4);
+    transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+  }
+  .bj-exp-cta:hover{
+    border-color:rgba(212,180,131,.9);
+    box-shadow:0 8px 22px -6px rgba(197,164,109,.6);
+    transform:translateY(-1px);
+  }
+
+  @media (max-width:639px){
+    .bj-exp-back{
+      width:38px; height:38px; padding:0; border-radius:50%; flex-shrink:0;
+    }
+    .bj-exp-back__full{ display:none; }
+    .bj-exp-back__icon{ display:inline; font-size:1rem; line-height:1; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bj-exp-header" id="bj-exp-header">
+  <a class="bj-exp-brand" href="../index.html">
+    <img src="../assets/brand/bitan-icon.png" alt="">
+    <span><b>BITAN</b><em>JOURNEYS</em></span>
+  </a>
+  <nav class="bj-exp-nav" aria-label="Navegación de la experiencia">
+    <a class="bj-exp-back" href="../index.html" aria-label="Volver al mundo">
+      <span class="bj-exp-back__full">← Volver al mundo</span>
+      <span class="bj-exp-back__icon" aria-hidden="true">←</span>
+    </a>
+    <!-- Mismo mecanismo que "Quiero mi viaje con Bitan": navega a ../index.html#brief=1.
+         Usa un fragmento (#) y no un query string (?) porque algunos servidores estáticos
+         locales redirigen /index.html a /index y descartan el query string; el fragmento
+         sobrevive esa redirección porque el navegador lo preserva del lado del cliente. -->
+    <a class="bj-exp-cta" href="../index.html#brief=1">Diseñar mi viaje →</a>
+  </nav>
+</header>
+<script>
+(function(){
+  var header = document.getElementById('bj-exp-header');
+  if (!header) return;
+  var onScroll = function(){ header.classList.toggle('is-scrolled', window.scrollY > 24); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+<!--
+  BITAN JOURNEYS — "Tu viaje, en tus manos"
+  Adaptado del export aprobado en app-experience-design/ como página propia (/experiencia/).
+  El CTA final reutiliza el mismo mecanismo que "Diseñar mi viaje" en la home: navega a
+  ../index.html#brief=1, que la app principal detecta para entrar directo al brief existente.
+-->
+<section class="bj-viaje" id="tu-viaje-en-tus-manos" aria-labelledby="bj-titulo">
+
+  <!-- ============ 1. TRANSICIÓN DESDE EL GLOBO ============ -->
+  <div class="bj-wrap">
+    <nav class="bj-transicion bj-reveal" aria-label="Dónde estás en el recorrido">
+      <span class="bj-transicion__paso">El mundo</span>
+      <span class="bj-transicion__linea" aria-hidden="true"></span>
+      <span class="bj-transicion__paso">Tu destino</span>
+      <span class="bj-transicion__linea bj-transicion__linea--activa" aria-hidden="true"></span>
+      <span class="bj-transicion__actual" aria-current="step">
+        <span class="bj-transicion__punto" aria-hidden="true"></span>Tu viaje
+      </span>
+    </nav>
+
+    <!-- ============ 2. DECLARACIÓN ============ -->
+    <div class="bj-declaracion">
+      <p class="bj-eyebrow bj-reveal">Tu viaje, en tus manos</p>
+      <h2 class="bj-sr" id="bj-titulo">No te entrego un itinerario. Te entrego tu viaje.</h2>
+      <p class="bj-declaracion__negacion bj-reveal" style="--bj-delay:.08s" aria-hidden="true">No te entrego un itinerario.</p>
+      <p class="bj-declaracion__afirmacion bj-reveal" style="--bj-delay:.16s" aria-hidden="true">Te entrego <em>tu viaje</em>.</p>
+
+      <div class="bj-declaracion__apoyo bj-reveal" style="--bj-delay:.24s">
+        <p class="bj-copy">Una experiencia digital creada alrededor de tu ruta, tus reservas y tu forma de viajar.</p>
+        <p class="bj-serif-quote">Día por día. Lugar por lugar.<br>Todo lo que necesitas, cuando lo necesitas.</p>
+      </div>
+
+      <p class="bj-scrollhint bj-reveal" style="--bj-delay:.32s">
+        <svg width="12" height="24" viewBox="0 0 12 24" fill="none" stroke="rgba(197,164,109,.75)" stroke-width="1.2" aria-hidden="true">
+          <path d="M6 1v19"/><path d="M2 16l4 4 4-4"/>
+        </svg>
+        Sigue bajando
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ 3. LOS TRES MOMENTOS ============ -->
+  <div class="bj-wrap">
+    <div class="bj-momentos">
+
+      <!-- ---------- 01 · ANTES DEL VIAJE ---------- -->
+      <article class="bj-momento bj-momento--antes">
+        <div class="bj-momento__texto bj-reveal">
+          <p class="bj-momento__marca">
+            <span class="bj-momento__num">01</span>
+            <span class="bj-momento__rule" aria-hidden="true"></span>
+            <span class="bj-momento__etiqueta">Antes del viaje</span>
+          </p>
+          <h3 class="bj-momento__titulo">Sabes qué reservar, cuándo hacerlo y cuánto vas a gastar.</h3>
+          <p class="bj-copy">Lo confirmado, lo pendiente y la fecha en que conviene resolverlo. En un solo lugar, desde el día que empezamos a diseñar tu viaje.</p>
+        </div>
+
+        <div class="bj-momento__producto bj-bleed--right bj-reveal" style="--bj-delay:.12s">
+          <div class="bj-device">
+            <div class="bj-screen">
+              <div class="bj-app__head">
+                <div>
+                  <span class="bj-app__kicker">Perú · 9 días · oct 2026</span>
+                  <p class="bj-app__titulo">Andrea &amp; Diego</p>
+                </div>
+              </div>
+
+              <span class="bj-app__label">Tus reservas</span>
+              <div class="bj-lista">
+                <div class="bj-fila">
+                  <svg class="bj-fila__icono" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7C8C78" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2.5 14.5 21 6.5 20 10.5 6.5 19 4 16.5 9 15"/></svg>
+                  <span class="bj-fila__cuerpo">
+                    <span class="bj-fila__titulo">SJO → LIM → CUZ</span>
+                    <span class="bj-fila__detalle">11 oct · 06:20 · LA2481</span>
+                  </span>
+                  <span class="bj-badge">Confirmado</span>
+                </div>
+
+                <div class="bj-fila">
+                  <svg class="bj-fila__icono" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7C8C78" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 20V9l9-5 9 5v11"/><path d="M9 20v-6h6v6"/></svg>
+                  <span class="bj-fila__cuerpo">
+                    <span class="bj-fila__titulo">Casa San Blas, Cusco</span>
+                    <span class="bj-fila__detalle">3 noches · desayuno incluido</span>
+                  </span>
+                  <span class="bj-badge">Confirmado</span>
+                </div>
+
+                <div class="bj-fila bj-fila--alerta">
+                  <svg class="bj-fila__icono" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C5A46D" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M8 20l-2 2M16 20l2 2M9 8h6"/></svg>
+                  <span class="bj-fila__cuerpo">
+                    <span class="bj-fila__titulo">Tren a Machu Picchu</span>
+                    <span class="bj-fila__detalle">Reservar antes del 12 ago · se agota</span>
+                  </span>
+                </div>
+
+                <div class="bj-fila bj-fila--pendiente">
+                  <svg class="bj-fila__icono" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(244,235,216,.5)" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 18 9 7l5 7 3-4 3 8z"/></svg>
+                  <span class="bj-fila__cuerpo">
+                    <span class="bj-fila__titulo">Huayna Picchu · 07:00</span>
+                    <span class="bj-fila__detalle">Cupo limitado · te aviso cuando abra</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="bj-presupuesto">
+                <div class="bj-presupuesto__head">
+                  <span class="bj-app__label">Presupuesto</span>
+                  <span class="bj-presupuesto__monto">estimado y en seguimiento</span>
+                </div>
+                <div class="bj-barra" role="img" aria-label="Presupuesto: 46% reservado, 22% pendiente">
+                  <span class="bj-barra__reservado"></span>
+                  <span class="bj-barra__pendiente"></span>
+                </div>
+                <div class="bj-leyenda">
+                  <span><span class="bj-punto bj-punto--champ" aria-hidden="true"></span>Reservado</span>
+                  <span><span class="bj-punto bj-punto--sage" aria-hidden="true"></span>Pendiente</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---------- 02 · DURANTE EL VIAJE ---------- -->
+      <article class="bj-momento bj-momento--durante">
+        <div class="bj-momento__texto bj-reveal">
+          <p class="bj-momento__marca">
+            <span class="bj-momento__num">02</span>
+            <span class="bj-momento__rule" aria-hidden="true"></span>
+            <span class="bj-momento__etiqueta">Durante el viaje</span>
+          </p>
+          <h3 class="bj-momento__titulo">Abres Bitan y sabes qué toca hoy, cómo llegar, dónde comer y qué tienes reservado.</h3>
+          <p class="bj-copy">Sin abrir cinco aplicaciones ni buscar el correo de la reserva mientras el taxi espera.</p>
+        </div>
+
+        <div class="bj-momento__producto bj-bleed--right bj-reveal" style="--bj-delay:.12s">
+          <div class="bj-device">
+            <div class="bj-screen">
+              <div class="bj-app__head">
+                <div>
+                  <span class="bj-app__kicker">Hoy · Día 4 de 9</span>
+                  <p class="bj-app__titulo">Valle Sagrado</p>
+                </div>
+                <span class="bj-app__meta">19° / 6°</span>
+              </div>
+
+              <div class="bj-timeline">
+                <div class="bj-parada bj-parada--activa">
+                  <span class="bj-parada__riel" aria-hidden="true"><span class="bj-parada__dot"></span><span class="bj-parada__linea"></span></span>
+                  <span class="bj-parada__cuerpo">
+                    <span class="bj-parada__hora">07:40</span>
+                    <span class="bj-parada__titulo">Salida de Cusco</span>
+                    <span class="bj-parada__detalle">Transporte privado · 1 h 15 min</span>
+                  </span>
+                </div>
+
+                <div class="bj-parada">
+                  <span class="bj-parada__riel" aria-hidden="true"><span class="bj-parada__dot"></span><span class="bj-parada__linea"></span></span>
+                  <span class="bj-parada__cuerpo">
+                    <span class="bj-parada__hora">09:15</span>
+                    <span class="bj-parada__titulo">Mercado de Pisac</span>
+                    <span class="bj-parada__detalle">2 h · lleva soles en efectivo</span>
+                  </span>
+                </div>
+
+                <div class="bj-parada">
+                  <span class="bj-parada__riel" aria-hidden="true"><span class="bj-parada__dot"></span><span class="bj-parada__linea"></span></span>
+                  <span class="bj-parada__cuerpo">
+                    <span class="bj-parada__hora">13:00</span>
+                    <span class="bj-parada__titulo">Almuerzo · Hawa, Urubamba</span>
+                    <span class="bj-parada__firma">Recomendación de Esteban</span>
+                  </span>
+                </div>
+
+                <div class="bj-parada">
+                  <span class="bj-parada__riel" aria-hidden="true"><span class="bj-parada__dot"></span></span>
+                  <span class="bj-parada__cuerpo">
+                    <span class="bj-parada__hora">16:30</span>
+                    <span class="bj-parada__titulo">Check-in · Sol y Luna <span class="bj-badge">Reservado</span></span>
+                    <span class="bj-parada__detalle">Reserva a tu nombre</span>
+                    <span class="bj-acciones">
+                      <a class="bj-accion" href="#como-llegar">Cómo llegar</a>
+                      <a class="bj-accion" href="#ver-reserva">Ver reserva</a>
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <p class="bj-aviso">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7FB3CC" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
+                Mañana sales temprano: tren 06:10 desde Ollantaytambo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---------- 03 · SI LOS PLANES CAMBIAN ---------- -->
+      <article class="bj-momento bj-momento--cambios">
+        <div class="bj-momento__texto bj-reveal">
+          <p class="bj-momento__marca">
+            <span class="bj-momento__num">03</span>
+            <span class="bj-momento__rule" aria-hidden="true"></span>
+            <span class="bj-momento__etiqueta">Si los planes cambian</span>
+          </p>
+          <h3 class="bj-momento__titulo">Tu ruta sigue contigo.</h3>
+          <p class="bj-copy">Sin buscar entre PDFs, screenshots, correos y 40 pestañas abiertas.</p>
+
+          <ul class="bj-descartes">
+            <li>itinerario.pdf</li>
+            <li>IMG_4821.png</li>
+            <li>correo de confirmación</li>
+            <li>40 pestañas</li>
+          </ul>
+
+          <p class="bj-offline-nota">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C8C78" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5a7 7 0 0 1 14 0"/><path d="M8.5 16a4 4 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="#7C8C78"/></svg>
+            Disponible sin conexión, en el bolsillo.
+          </p>
+        </div>
+
+        <div class="bj-momento__producto bj-bleed--left bj-reveal" style="--bj-delay:.12s">
+          <div class="bj-panel">
+            <div class="bj-panel__head">
+              <div>
+                <span class="bj-app__kicker">Tu ruta completa</span>
+                <p class="bj-app__titulo">Perú · 9 días · 5 paradas</p>
+              </div>
+              <span class="bj-offline">Sin conexión</span>
+            </div>
+
+            <svg class="bj-panel__mapa" viewBox="0 0 590 330" role="img" aria-label="Mapa de la ruta: Lima, Cusco, Valle Sagrado (hoy, día 4) y Machu Picchu">
+              <path d="M-20 250C80 218 150 262 230 224S400 172 610 196" fill="none" stroke="rgba(244,235,216,.05)" stroke-width="16"/>
+              <path d="M-20 160C90 176 170 128 260 148S440 110 610 128" fill="none" stroke="rgba(244,235,216,.04)" stroke-width="12"/>
+              <path d="M-20 302C120 290 210 310 320 288S500 258 610 272" fill="none" stroke="rgba(45,110,138,.16)" stroke-width="7"/>
+              <path d="M60 268 196 196" stroke="#C5A46D" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M196 196 330 148" stroke="#C5A46D" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M330 148 452 84" stroke="#C5A46D" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M452 84C500 150 330 230 200 208" fill="none" stroke="rgba(197,164,109,.45)" stroke-width="1.6" stroke-dasharray="2 6" stroke-linecap="round"/>
+              <circle cx="60" cy="268" r="5" fill="#C5A46D"/>
+              <circle cx="196" cy="196" r="5" fill="#C5A46D"/>
+              <circle cx="330" cy="148" r="7" fill="#C5A46D"/>
+              <circle cx="330" cy="148" r="14" fill="none" stroke="rgba(197,164,109,.4)"/>
+              <circle cx="452" cy="84" r="5" fill="none" stroke="#C5A46D" stroke-width="1.8"/>
+              <text x="60" y="292" fill="rgba(244,235,216,.70)" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">Lima</text>
+              <text x="60" y="308" fill="rgba(244,235,216,.45)" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" text-anchor="middle">Día 1–2</text>
+              <text x="196" y="220" fill="rgba(244,235,216,.70)" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">Cusco</text>
+              <text x="196" y="236" fill="rgba(244,235,216,.45)" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" text-anchor="middle">Día 3</text>
+              <text x="330" y="110" fill="#C5A46D" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" letter-spacing="1.6" text-anchor="middle">HOY · DÍA 4</text>
+              <text x="330" y="126" fill="#F4EBD8" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" font-weight="700" text-anchor="middle">Valle Sagrado</text>
+              <text x="452" y="46" fill="rgba(244,235,216,.45)" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" text-anchor="middle">Día 5–6</text>
+              <text x="452" y="62" fill="rgba(244,235,216,.70)" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">Machu Picchu</text>
+            </svg>
+
+            <div class="bj-dias" role="list" aria-label="Días del viaje">
+              <span class="bj-dia" role="listitem">1</span>
+              <span class="bj-dia" role="listitem">2</span>
+              <span class="bj-dia" role="listitem">3</span>
+              <span class="bj-dia bj-dia--hoy" role="listitem">Día 4 · hoy</span>
+              <span class="bj-dia bj-dia--futuro" role="listitem">5</span>
+              <span class="bj-dia bj-dia--futuro" role="listitem">6</span>
+              <span class="bj-dia bj-dia--futuro" role="listitem">7</span>
+              <span class="bj-dia bj-dia--futuro" role="listitem">8</span>
+              <span class="bj-dia bj-dia--futuro" role="listitem">9</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- ============ 4. REVEAL FINAL + CTA ============ -->
+  <div class="bj-wrap bj-final">
+    <div class="bj-final__grid">
+
+      <div class="bj-reveal">
+        <p class="bj-eyebrow">Tu viaje, en tus manos</p>
+        <p class="bj-payoff" style="margin-top:1.5rem">
+          <span class="bj-payoff__linea bj-payoff__linea--fuerte">Diseñada para tu viaje.</span>
+          <span class="bj-payoff__linea bj-payoff__linea--suave">No para todos los viajes.</span>
+        </p>
+
+        <!-- ---------- Bitan: banner de la app personalizada ---------- -->
+        <div class="bj-final__banner">
+          <img src="../assets/brand/bitan-app-banner.png" alt="Bitan, el explorador de Bitan Journeys, sostiene tu app de viaje personalizada con la ruta a Machu Picchu, Perú: no viajas con un PDF, viajas con tu app, con toda tu ruta, reservas y recomendaciones en un solo lugar, diseñada para ti." width="1944" height="809" loading="lazy">
+        </div>
+
+        <div class="bj-cta-bloque">
+          <!-- Reutiliza el mecanismo existente de "Diseñar mi viaje": la home detecta #brief=1
+               (fragmento, no query string: sobrevive a redirecciones /index.html → /index) -->
+          <a class="bj-cta" href="../index.html#brief=1">
+            Quiero mi viaje con Bitan
+            <svg width="20" height="12" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M0 6h18"/><path d="M13 1l5 5-5 5"/></svg>
+          </a>
+          <div class="bj-cta-premium">
+            <p class="bj-eyebrow">Disponible como experiencia premium de Bitan</p>
+            <p class="bj-cta-micro">Tu viaje, reservas y recomendaciones en una app personalizada.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bj-final__producto bj-reveal" style="--bj-delay:.14s">
+        <!-- Capa de escritorio, solo visible en pantallas grandes -->
+        <div class="bj-browser" aria-hidden="true">
+          <div class="bj-browser__bar">
+            <span class="bj-browser__dot"></span><span class="bj-browser__dot"></span><span class="bj-browser__dot"></span>
+            <span class="bj-browser__url">bitanjourneys.com/andrea-y-diego</span>
+          </div>
+          <div class="bj-browser__body">
+            <svg class="bj-browser__mapa" viewBox="0 0 436 126">
+              <path d="M-10 96C70 78 130 102 210 82S350 54 446 68" fill="none" stroke="rgba(244,235,216,.05)" stroke-width="13"/>
+              <path d="M-10 46C80 58 150 32 240 44S380 24 446 34" fill="none" stroke="rgba(45,110,138,.16)" stroke-width="6"/>
+              <path d="M46 98 142 74 238 56 332 30" fill="none" stroke="rgba(197,164,109,.85)" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="46" cy="98" r="3.6" fill="#C5A46D"/>
+              <circle cx="142" cy="74" r="3.6" fill="#C5A46D"/>
+              <circle cx="238" cy="56" r="5.5" fill="#C5A46D"/>
+              <circle cx="332" cy="30" r="3.6" fill="none" stroke="#C5A46D" stroke-width="1.5"/>
+            </svg>
+            <p class="bj-browser__nota">Perú · 9 días · vista general</p>
+          </div>
+        </div>
+
+        <div class="bj-device">
+          <div class="bj-screen">
+            <div class="bj-app__head">
+              <div>
+                <span class="bj-app__kicker">Hoy · Día 4 de 9</span>
+                <p class="bj-app__titulo">Valle Sagrado</p>
+              </div>
+              <span class="bj-app__meta">19° / 6°</span>
+            </div>
+            <div class="bj-lista">
+              <div class="bj-fila">
+                <span class="bj-parada__hora" style="width:2.25rem;flex-shrink:0">07:40</span>
+                <span class="bj-fila__cuerpo">
+                  <span class="bj-fila__titulo">Salida de Cusco</span>
+                  <span class="bj-fila__detalle">Transporte privado</span>
+                </span>
+              </div>
+              <div class="bj-fila">
+                <span class="bj-parada__hora" style="width:2.25rem;flex-shrink:0">09:15</span>
+                <span class="bj-fila__cuerpo">
+                  <span class="bj-fila__titulo">Mercado de Pisac</span>
+                  <span class="bj-fila__detalle">Efectivo en soles</span>
+                </span>
+              </div>
+              <div class="bj-fila">
+                <span class="bj-parada__hora" style="width:2.25rem;flex-shrink:0">16:30</span>
+                <span class="bj-fila__cuerpo">
+                  <span class="bj-fila__titulo">Check-in · Sol y Luna</span>
+                  <span class="bj-fila__detalle" style="color:#A9BBA4">Reservado</span>
+                </span>
+              </div>
+            </div>
+            <p class="bj-aviso">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7FB3CC" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
+              Mañana: tren 06:10 a Machu Picchu.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<script src="js/tu-viaje-en-tus-manos.js" defer></script>
+</body>
+</html>
