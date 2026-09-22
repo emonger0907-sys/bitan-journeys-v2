@@ -45,6 +45,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .bj-how-scroll::-webkit-scrollbar{width:0;height:0}
 .bj-how-scroll{scrollbar-width:none}
 .bj-how-node.bj-how-active{opacity:1}
+.bj-home-appcta{max-width:400px}
+@media (max-height:820px){.bj-home-appcta{max-width:300px}}
+@media (max-height:680px){.bj-home-appcta{max-width:220px;margin-top:0!important}}
 @media (prefers-reduced-motion:reduce){
   .bj-how-overlay,.bj-how-overlay *{animation:none!important;transition:none!important}
 }
@@ -194,11 +197,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           <button onClick="{{ toggleVisited }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.7rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">{{ mapToggleLabel }}</button>
           <button onClick="{{ openHow }}" style="padding:8px 16px;border:1px solid rgba(212,180,131,.28);border-radius:999px;background:rgba(244,235,216,.04);color:rgba(244,235,216,.65);font-size:.7rem;letter-spacing:.03em;cursor:pointer;white-space:nowrap" style-hover="border-color:rgba(212,180,131,.7);color:#f4ebd8">¿Cómo funciona? →</button>
         </div>
-        <sc-if value="{{ roomy }}" hint-placeholder-val="{{ true }}">
-        <a href="experiencia/" aria-label="Conoce la experiencia: no viajas con un PDF, viajas con tu app. Toda tu ruta, reservas y recomendaciones en un solo lugar, diseñada para ti." style="display:block;width:100%;max-width:400px;margin-top:2px;transition:transform .3s ease" style-hover="transform:translateY(-2px)">
+        <a class="bj-home-appcta" href="experiencia/" aria-label="Conoce la experiencia: no viajas con un PDF, viajas con tu app. Toda tu ruta, reservas y recomendaciones en un solo lugar, diseñada para ti." style="display:block;width:100%;margin-top:2px;transition:transform .3s ease" style-hover="transform:translateY(-2px)">
           <img src="assets/brand/bitan-app-cta.png" alt="" loading="lazy" style="display:block;width:100%;height:auto;aspect-ratio:1942/809;object-fit:cover">
         </a>
-        </sc-if>
         <sc-if value="{{ showVisited }}" hint-placeholder-val="{{ false }}">
         <div style="width:100%;max-width:340px;max-height:200px;overflow-y:auto;border:1px solid rgba(212,180,131,.16);border-radius:16px;background:rgba(5,11,20,.55)">
           <sc-for list="{{ visitedList }}" as="p" hint-placeholder-count="0">
